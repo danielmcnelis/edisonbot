@@ -17,7 +17,7 @@ const { convertArrayToObject } = require('./utility.js')
 const { dandy } = require('../static/emojis.json')
 const { 
     accum, airbellum, alius, alo, archer, arma, artemis, bfadd, boomboxen, bribe, bushi, caius, cat, celfon, chariot, codarus,
-    coelacanth, consonance, cstrike, dad, dandy, ddwl, debris, detonation, diva, drastic, duplication, emmersblade, exodia, 
+    coelacanth, consonance, cstrike, dad, dandylion, ddwl, debris, detonation, diva, drastic, duplication, emmersblade, exodia, 
     faultroll, fert, firedog, fishborg, fortress, fulhelm, garden, gateway, gearframe, ggadget, gobzomb, gotss, gottoms, gozen,
     gravirose, grepher, gspark, icarus, jdrag, kalut, kmdrago, kristya, laquari, life, lion, lonefire, mali, mezuki, miracle,
     mobius, monk, moray, motr, necrovalley, quickdraw, raiza, recharge, redmd, rejuv, rekindling, remoten, rgadget, rivalry, 
@@ -188,9 +188,9 @@ const getDeckType = async (player, tournamentName = 'other') => {
             (ydk[gearframe] >= 2 && ydk[fortress] >= 2 && !ydk[ggadget]) ? 'machina' :
             (ydk[laquari] >= 2 && ydk[chariot] >= 2) ? 'gladiator beast' :
             (ydk[jdrag] >= 2 && ydk[recharge] >= 2) ? 'lightsworn' :
-            (ydk[lonefire] >= 2 && ydk[dandy] >= 2 && ydk[quickdraw] && ydk[debris] && !ydk[jdrag] && !ydk[gobzomb] && !ydk[rekindling] && !ydk[duplication]) ? 'quickdraw plant' :
-            (ydk[vrocket] >= 2 && ydk[dandy] >= 2 && ydk[quickdraw]) ? 'volcanic quickdraw' :
-            (ydk[dandy] >= 2  && ydk[quickdraw] && ydk[firedog] >= 2 && ydk[rekindling] >= 2) ? 'flamvell quickdraw' :
+            (ydk[lonefire] >= 2 && ydk[dandylion] >= 2 && ydk[quickdraw] && ydk[debris] && !ydk[jdrag] && !ydk[gobzomb] && !ydk[rekindling] && !ydk[duplication]) ? 'quickdraw plant' :
+            (ydk[vrocket] >= 2 && ydk[dandylion] >= 2 && ydk[quickdraw]) ? 'volcanic quickdraw' :
+            (ydk[dandylion] >= 2  && ydk[quickdraw] && ydk[firedog] >= 2 && ydk[rekindling] >= 2) ? 'flamvell quickdraw' :
             (ydk[quickdraw] >= 2 && ydk[tuningware] >= 2 && ydk[duplication] >= 2) ? 'quickdraw machine' :
             (ydk[quickdraw] >= 2 && ydk[gobzomb] && ydk[mezuki]) ? 'quickdraw zombie' :
             (ydk[gobzomb] >= 2 && ydk[turtle] && ydk[mezuki] && ydk[life] && !ydk[quickdraw]) ? 'quickdraw zombie' :

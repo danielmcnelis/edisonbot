@@ -41,6 +41,7 @@
     "challonge-js": "^1.1.1",
     "discord.js": "^12.5.3",
     "fs": "0.0.1-security",
+    "fuzzyset": "^1.0.7",
     "google-spreadsheet": "^3.0.11",
     "googleapis": "^39.2.0",
     "minimist": "0.0.8",

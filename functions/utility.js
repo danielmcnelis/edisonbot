@@ -299,7 +299,6 @@ module.exports = {
     isNewUser,
     isProgrammer,
     isTourPlayer,
-    isWCQ,
     search,
     shuffleArray
 }

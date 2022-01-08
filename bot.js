@@ -6,6 +6,7 @@ const axios = require('axios')
 const Discord = require('discord.js')
 const fs = require('fs')
 const { Op } = require('sequelize')
+const FuzzySet = require('fuzzyset')
 
 //DATABASE IMPORTS
 const { Entry, Match, Matchup, Membership, Player, Role, Stats, Status, Tournament }  = require('./db/index.js')
