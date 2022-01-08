@@ -1,0 +1,6 @@
+
+node_modules
+geckodriver
+credentials.json
+secrets.json
+decks
