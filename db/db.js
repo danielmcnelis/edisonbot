@@ -1,6 +1,18 @@
 
 const Sequelize = require('sequelize')
-const db = new Sequelize('postgres://localhost:5432/formatlibrary', { logging: false })
+const { pgPassword } = require('../secrets.json')
+
+const db = new Sequelize(
+  'formatlibrary',
+  'ubuntu',
+  pgPassword,
+  { 
+    host: 'localhost',
+    port: 5432,
+    dialect: 'postgres',
+    logging: false
+  }
+)
 
 module.exports = {
   db
