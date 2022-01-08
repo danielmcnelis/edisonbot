@@ -20,13 +20,11 @@ const { assignRoles, capitalize, createMembership, createPlayer, fetchCardNames,
 
 // STATIC IMPORTS
 const { welcomeChannel } = require('./static/channels.json')
+const { client } = require('./static/clients.js')
 const { botcom, bracketcom, dbcom, deckcom, dropcom, h2hcom, joincom, legalcom, banscom, losscom, manualcom, noshowcom, pfpcom, rankcom, rolecom, signupcom, startcom, statscom, undocom } = require('./static/commands.json')
 const { sad, EF, dandy, legend } = require('./static/emojis.json')
 const { rankedRole, tourRole } = require('./static/roles.json')
-const { challongeAPIKey, discordBotToken } = require('./secrets.json')
-
-const client = new Discord.Client()
-client.login(discordBotToken)
+const { challongeAPIKey } = require('./secrets.json')
 const fuzzyCards = FuzzySet([], false)
 
 //READY
