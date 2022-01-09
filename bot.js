@@ -41,18 +41,18 @@ client.on('guildMemberAdd', async (member) => {
     if (await isNewUser(member.user.id)) await createPlayer(member) 
     if (await isNewMember(guild.id, member.user.id)) {
         await createMembership(guild, member)
-        return channel.send(`${member}, Welcome to the EdisonFormat.com ${EF} discord server. ${dandy}`)
+        return channel.send({ content: `${member}, Welcome to the EdisonFormat.com ${EF} discord server. ${dandy}`})
     } else {
         await assignRoles(guild, member)
-        return channel.send(`${member}, Welcome back to the EdisonFormat.com ${EF} discord server! We missed you. ${legend}`)
+        return channel.send({ content: `${member}, Welcome back to the EdisonFormat.com ${EF} discord server! We missed you. ${legend}`})
     }
 })
 
 //GOODBYE
-client.on('guildMemberRemove', member => client.channels.cache.get(welcomeChannel).send(`Oh dear. ${member.user.username} has left the server. ${sad}`))
+client.on('guildMemberRemove', member => client.channels.cache.get(welcomeChannel).send({ content: `Oh dear. ${member.user.username} has left the server. ${sad}`}))
 
 //COMMANDS
-client.on('message', async (message) => {
+client.on('messageCreate', async (message) => {
     if (
 		//no commands in DMs
 		!message.guild || 
@@ -83,38 +83,38 @@ client.on('message', async (message) => {
     if (!message.content.startsWith("!") && message.content.includes(`{`) && message.content.includes(`}`)) { 
         const query = message.content.slice(message.content.indexOf('{') + 1, message.content.indexOf('}'))
         const cardEmbed = await search(query, fuzzyCards)
-        if (!cardEmbed) return message.channel.send(`Could not find card: "${query}".`)
-        else return message.channel.send(cardEmbed)
+        if (!cardEmbed) return message.channel.send({ content: `Could not find card: "${query}".`})
+        else return message.channel.send({ embeds: [cardEmbed] })
     }
 
     //PING 
-    if (cmd === `!ping`) return message.channel.send('🏓')
+    if (cmd === `!ping`) return message.channel.send({ content: '🏓' })
 
     // TEST 
     if (cmd === `!test`) {
         if (isProgrammer(message.member)) {
-            return message.channel.send(`🧪`)
+            return message.channel.send({ content: `🧪` })
         } else {
-            return message.channel.send(`🧪`)
+            return message.channel.send({ content: `🧪` })
         }
     }
 
     // FIX 
     if (cmd === `!fix`) {
         if (isProgrammer(message.member)) {
-            return message.channel.send(`🛠️`)
+            return message.channel.send({ content: `🛠️` })
         } else {
-            return message.channel.send(`🛠️`)
+            return message.channel.send({ content: `🛠️` })
         }
     }
 
     //CREATE 
     if (cmd === `!create`) {
-        if (!isMod(message.member)) return message.channel.send('You do not have permission to do that.')
-        if (!args.length) return message.channel.send(`Please provide a name for the new tournament.`)
+        if (!isMod(message.member)) return message.channel.send({ content: 'You do not have permission to do that.'})
+        if (!args.length) return message.channel.send({ content: `Please provide a name for the new tournament.`})
         const tournament_type = await getTournamentType(message)
-        if (!tournament_type) return message.channel.send(`Please select a valid tournament type.`)
-        if (!message.guild.channels.cache.get(tournament_channel)) return message.channel.send(`Please provide a valid tournament channel.`)
+        if (!tournament_type) return message.channel.send({ content: `Please select a valid tournament type.`})
+        if (!message.guild.channels.cache.get(tournament_channel)) return message.channel.send({ content: `Please provide a valid tournament channel.`})
         const str = generateRandomString(10, '0123456789abcdefghijklmnopqrstuvwxyz')
         const name = args[0].replace(/[^\w\s]/gi, "_").replace(/ /g,'')
 
@@ -151,12 +151,12 @@ client.on('message', async (message) => {
                     console.log(`made new directory: ./decks/${name}`)
                 })
             
-                return message.channel.send(
+                return message.channel.send({ content: 
                     `You created a new tournament:` + 
                     `\nName: ${data.tournament.name} ${dandy}` + 
                     `\nType: ${capitalize(data.tournament.tournament_type)}` +
                     `\nBracket: https://challonge.com/${data.tournament.url}`
-                )
+                })
             }
         } catch (err) {
             console.log(err)
@@ -193,30 +193,30 @@ client.on('message', async (message) => {
                         console.log(`made new directory: ./decks/${name}`)
                     })
 
-                    return message.channel.send(
+                    return message.channel.send({ content: 
                         `You created a new tournament:` + 
                         `\nName: ${data.tournament.name} ${dandy}` + 
                         `\nType: ${capitalize(data.tournament.tournament_type)}` +
                         `\nBracket: https://challonge.com/${data.tournament.url}`
-                    )
+                    })
                 } 
             } catch (err) {
                 console.log(err)
-                return message.channel.send(`Unable to create tournament on Challonge.com.`)
+                return message.channel.send({ content: `Unable to create tournament on Challonge.com.`})
             }
         }
     }
 
     //DESTROY
     if (cmd === `!destroy`) {
-        if (!isMod(message.member)) return message.channel.send('You do not have permission to do that.')
-        if (!args.length) return message.channel.send(`Please specify the name of the tournament you wish to destroy.`)
+        if (!isMod(message.member)) return message.channel.send({ content: 'You do not have permission to do that.'})
+        if (!args.length) return message.channel.send({ content: `Please specify the name of the tournament you wish to destroy.`})
 
         const name = args[0]
         const tournament = await Tournament.findOne({ where: { name: { [Op.iLike]: name }, guildId: mgid } })
-        if (!tournament) return message.channel.send(`Could not find tournament: "${name}".`)
-        if (tournament.state === 'underway') return message.channel.send(`This tournament is underway, meaning it can only be deleted manually.`)
-        if (tournament.state === 'complete') return message.channel.send(`This tournament is archived, meaning it can only be deleted manually.`)
+        if (!tournament) return message.channel.send({ content: `Could not find tournament: "${name}".`})
+        if (tournament.state === 'underway') return message.channel.send({ content: `This tournament is underway, meaning it can only be deleted manually.`})
+        if (tournament.state === 'complete') return message.channel.send({ content: `This tournament is archived, meaning it can only be deleted manually.`})
         const tournamentId = tournament.id
         const tournament_name = tournament.name
 
@@ -243,29 +243,29 @@ client.on('message', async (message) => {
                 }
         
                 await tournament.destroy()
-                return message.channel.send(`Yikes! You deleted ${tournament_name} ${dandy} from your Challonge account.`)
+                return message.channel.send({ content: `Yikes! You deleted ${tournament_name} ${dandy} from your Challonge account.`})
             } else {
-                return message.channel.send(`Unable to delete tournament from Challonge account.`)
+                return message.channel.send({ content: `Unable to delete tournament from Challonge account.`})
             }
         } catch (err) {
-            return message.channel.send(`Error: Unable to delete tournament from Challonge account.`)
+            return message.channel.send({ content: `Error: Unable to delete tournament from Challonge account.`})
         }
     }
 
     //START
     if (startcom.includes(cmd)) {
-        if (!isMod(message.member)) return message.channel.send('You do not have permission to do that.')
+        if (!isMod(message.member)) return message.channel.send({ content: 'You do not have permission to do that.'})
         const tournaments = await Tournament.findAll({ where: { state: 'pending', guildId: mgid }, order: [['createdAt', 'ASC']] })
 		const tournament = await selectTournament(message, tournaments, maid)
-		if (!tournament) return message.channel.send(`There are no pending tournaments.`)
+		if (!tournament) return message.channel.send({ content: `There are no pending tournaments.`})
         const { name, id, url } = tournament
 		const unregCount = await Entry.count({ where: { participantId: null, tournamentId: id } })
-        if (unregCount) return message.channel.send('One of more players has not been signed up. Please check the Database.')
+        if (unregCount) return message.channel.send({ content: 'One of more players has not been signed up. Please check the Database.'})
 		const entryCount = await Entry.count({ where: { tournamentId: id } })
-		if (!entryCount) return message.channel.send(`Error: missing entrants.`)
+		if (!entryCount) return message.channel.send({ content: `Error: missing entrants.`})
 		const { sheet1Data, sheet2Data } = await createSheetData(tournament)
 		const success = await seed(message, tournament)
-		if (!success) return message.channel.send(`Error seeding tournament. Please try again or start it manually.`)
+		if (!success) return message.channel.send({ content: `Error seeding tournament. Please try again or start it manually.`})
 
 		const { status } = await axios({
 			method: 'post',
@@ -279,20 +279,20 @@ client.on('message', async (message) => {
 			await addSheet(spreadsheetId, 'Summary')
 			await writeToSheet(spreadsheetId, 'Summary', 'RAW', sheet2Data)
 			await uploadDeckFolder(name)
-			return message.channel.send(`Let's go! Your tournament is starting now: https://challonge.com/${url} ${dandy}`)
+			return message.channel.send({ content: `Let's go! Your tournament is starting now: https://challonge.com/${url} ${dandy}`})
 		} else {
-			return message.channel.send(`Error: could not access Challonge.com.`)
+			return message.channel.send({ content: `Error: could not access Challonge.com.`})
 		}
     }
 
     //END
     if (cmd === `!end`) {
-        if (!isMod(message.member)) return message.channel.send('You do not have permission to do that.')
-        if (!args.length) return message.channel.send(`Please specify the name of the tournament you wish to end.`)
+        if (!isMod(message.member)) return message.channel.send({ content: 'You do not have permission to do that.'})
+        if (!args.length) return message.channel.send({ content: `Please specify the name of the tournament you wish to end.`})
         const name = args[0]
         const tournament = await Tournament.findOne({ where: { name: { [Op.iLike]: name }}, guildId: mgid })
-        if (tournament.state === 'complete') return message.channel.send(`This tournament has already ended.`)
-        if (!tournament) return message.channel.send(`Could not find tournament: "${name}".`)
+        if (tournament.state === 'complete') return message.channel.send({ content: `This tournament has already ended.`})
+        if (!tournament) return message.channel.send({ content: `Could not find tournament: "${name}".`})
         const tournament_name = tournament.name
 
         const { status } = await axios({
@@ -320,16 +320,16 @@ client.on('message', async (message) => {
                 state: 'complete'
             })
             
-            return message.channel.send(`Congrats! The results of ${tournament_name} ${dandy} have been finalized.`)
+            return message.channel.send({ content: `Congrats! The results of ${tournament_name} ${dandy} have been finalized.`})
         } else {
-            return message.channel.send(`Unable to finalize ${tournament.name} ${dandy} on Challonge.com.`)
+            return message.channel.send({ content: `Unable to finalize ${tournament.name} ${dandy} on Challonge.com.`})
         }
     }
 
     //BRACKET
     if (bracketcom.includes(cmd)) {
         const tournaments = await Tournament.findAll({ where: { state: { [Op.not]: 'complete'}, guildId: mgid }, order: [['createdAt', 'ASC']]})
-        if (!tournaments.length) return message.channel.send(`There are no active tournaments.`)
+        if (!tournaments.length) return message.channel.send({ content: `There are no active tournaments.`})
         
         const results = []
         for (let i = 0; i < tournaments.length; i++) {
@@ -340,23 +340,23 @@ client.on('message', async (message) => {
             )
         }
 
-        return message.channel.send(results.join('\n\n'))
+        return message.channel.send({ content: results.join('\n\n')})
     }
 
     //JOIN
     if(joincom.includes(cmd)) {        
         const mention = message.mentions.members.first()
-        if (isMod(message.member) && mention) return message.channel.send(`Please type **!signup @user** to register someone else for the tournament.`)
+        if (isMod(message.member) && mention) return message.channel.send({ content: `Please type **!signup @user** to register someone else for the tournament.`})
         const player = await Player.findOne({ where: { id: maid }})
-        if (!player) return message.channel.send(`You are not in the database.`)
+        if (!player) return message.channel.send({ content: `You are not in the database.`})
         const tournaments = await Tournament.findAll({ where: { state: 'pending', guildId: mgid }, order: [['createdAt', 'ASC']] })
         const count = await Tournament.count({ where: { state: 'underway', guildId: mgid } })
         const tournament = await selectTournament(message, tournaments, maid)
-        if (!tournament && count) return message.channel.send(`Sorry, the tournament already started.`)
-        if (!tournament && !count) return message.channel.send(`There is no active tournament.`)
+        if (!tournament && count) return message.channel.send({ content: `Sorry, the tournament already started.`})
+        if (!tournament && !count) return message.channel.send({ content: `There is no active tournament.`})
         const entry = await Entry.findOne({ where: { playerId: maid, tournamentId: tournament.id } })
         
-        message.channel.send(`Please check your DMs.`)
+        message.channel.send({ content: `Please check your DMs.`})
         const dbName = player.duelingBook ? player.duelingBook : await askForDBName(message.member, player)
         if (!dbName) return
         const deckListUrl = await getDeckList(message.member, player, tournament.name)
@@ -369,7 +369,7 @@ client.on('message', async (message) => {
 
         if (!entry) {                                  
             const { participant } = await postParticipant(tournament, player)
-            if (!participant) return message.channel.send(`Error: Could not access tournament: ${tournament.name}`)
+            if (!participant) return message.channel.send({ content: `Error: Could not access tournament: ${tournament.name}`})
             
             const new_entry = await Entry.create({
                 pilot: player.name,
@@ -382,10 +382,10 @@ client.on('message', async (message) => {
                 tournamentId: tournament.id
             })
 
-            if (!new_entry) return message.channel.send(`Error: Could not access database.`)
+            if (!new_entry) return message.channel.send({ content: `Error: Could not access database.`})
             message.member.roles.add(tourRole)
-            message.author.send(`Thanks! I have all the information we need from you. Good luck in the tournament!`)
-            return client.channels.cache.get(tournament.channelId).send(`<@${player.id}> is now registered for ${tournament.name}!`)
+            message.author.send({ content: `Thanks! I have all the information we need from you. Good luck in the tournament!`})
+            return client.channels.cache.get(tournament.channelId).send({ content: `<@${player.id}> is now registered for ${tournament.name}!`})
         } else {
             await entry.update({
                 url: deckListUrl,
@@ -394,29 +394,29 @@ client.on('message', async (message) => {
                 deck_category: deckCategory
             })
     
-            message.author.send(`Thanks! I have your updated deck list for the tournament.`)
-            return client.channels.cache.get(tournament.channelId).send(`<@${player.id}> resubmitted their deck list for ${tournament.name}!`)
+            message.author.send({ content: `Thanks! I have your updated deck list for the tournament.`})
+            return client.channels.cache.get(tournament.channelId).send({ content: `<@${player.id}> resubmitted their deck list for ${tournament.name}!`})
         }
     }
 
     //SIGN UP
     if (signupcom.includes(cmd)) {
-        if (!isMod(message.member)) return message.channel.send('You do not have permission to do that. Please type **!join** instead.')   
+        if (!isMod(message.member)) return message.channel.send({ content: 'You do not have permission to do that. Please type **!join** instead.'})   
         const member = message.mentions.members.first()
-        if (!member) return message.channel.send(`Could not find user in the server.`)
+        if (!member) return message.channel.send({ content: `Could not find user in the server.`})
         const player = await Player.findOne({ where: { id: member.user.id }})
-        if (!player) return message.channel.send(`${member.user.username} is not in the database.`)
+        if (!player) return message.channel.send({ content: `${member.user.username} is not in the database.`})
         const tournaments = await Tournament.findAll({ where: { state: 'pending', guildId: mgid }, order: [['createdAt', 'ASC']] })
         const tournament = await selectTournament(message, tournaments, maid)
         const count = await Tournament.count({ where: { state: 'underway', guildId: mgid } })
-        if (!tournament && count) return message.channel.send(`Sorry, the tournament already started.`)
-        if (!tournament && !count) return message.channel.send(`There is no active tournament.`)
+        if (!tournament && count) return message.channel.send({ content: `Sorry, the tournament already started.`})
+        if (!tournament && !count) return message.channel.send({ content: `There is no active tournament.`})
         const entry = await Entry.findOne({ where: { playerId: player.id, tournamentId: tournament.id } })
         
         if (entry) {
-            message.channel.send(`Please check your DMs.\n\n(FYI: ${player.name} is already registered for ${tournament.name} ${dandy})`)
+            message.channel.send({ content: `Please check your DMs.\n\n(FYI: ${player.name} is already registered for ${tournament.name} ${dandy})`})
         } else {
-            message.channel.send(`Please check your DMs.`)
+            message.channel.send({ content: `Please check your DMs.`})
         }
 
         const dbName = player.duelingBook ? player.duelingBook : await askForDBName(message.member, player, override = true)
@@ -431,7 +431,7 @@ client.on('message', async (message) => {
 
         if (!entry) {                                  
             const { participant } = await postParticipant(tournament, player)
-            if (!participant) return message.channel.send(`Error: Could not access tournament: ${tournament.name}`)
+            if (!participant) return message.channel.send({ content: `Error: Could not access tournament: ${tournament.name}`})
             
             const new_entry = await Entry.create({
                 pilot: player.name,
@@ -444,10 +444,10 @@ client.on('message', async (message) => {
                 tournamentId: tournament.id
             })
 
-            if (!new_entry) return message.channel.send(`Error: Could not access database.`)
+            if (!new_entry) return message.channel.send({ content: `Error: Could not access database.`})
             member.roles.add(tourRole)
-            message.author.send(`Thanks! I have all the information we need for ${player.name}!`)
-            return client.channels.cache.get(tournament.channelId).send(`<@${player.id}> is now registered for ${tournament.name}!`)
+            message.author.send({ content: `Thanks! I have all the information we need for ${player.name}!`})
+            return client.channels.cache.get(tournament.channelId).send({ content: `<@${player.id}> is now registered for ${tournament.name}!`})
         } else {
             await entry.update({
                 url: deckListUrl,
@@ -456,15 +456,15 @@ client.on('message', async (message) => {
                 deck_category: deckCategory
             })
     
-            message.author.send(`Thanks! I have ${player.name}'s updated deck list for the tournament.`)
-            return client.channels.cache.get(tournament.channelId).send(`A moderator resubmitted <@${player.id}>'s deck list for ${tournament.name}!`)
+            message.author.send({ content: `Thanks! I have ${player.name}'s updated deck list for the tournament.`})
+            return client.channels.cache.get(tournament.channelId).send({ content: `A moderator resubmitted <@${player.id}>'s deck list for ${tournament.name}!`})
         }
     }
 
     //DROP
     if(dropcom.includes(cmd)) {
-        const tournaments = await Entry.findAll({ where: { playerId: maid }, include: Tournament }).map((e) => e.tournament).filter((t) => t.guildId === message.guild.id)
-        if (!tournaments.length) return message.channel.send(`You are not in an active tournament.`)
+        const tournaments = [...await Entry.findAll({ where: { playerId: maid }, include: Tournament })].map((e) => e.tournament).filter((t) => t.guildId === message.guild.id)
+        if (!tournaments.length) return message.channel.send({ content: `You are not in an active tournament.`})
         const tournament = await selectTournament(message, tournaments, maid)
         let success = tournament.state === 'pending'
         if (!success) {
@@ -475,7 +475,7 @@ client.on('message', async (message) => {
                 if (match.winner === maid || match.loser === maid) success = true 
             })
 
-            if (!success) return message.channel.send(`If you played a match, please report the result before dropping. Otherwise ask a Moderator to remove you.`)
+            if (!success) return message.channel.send({ content: `If you played a match, please report the result before dropping. Otherwise ask a Moderator to remove you.`})
         }
 
         const entry = await Entry.findOne({ where: { playerId: maid }, tournamentId: tournament.id })
@@ -485,15 +485,15 @@ client.on('message', async (message) => {
 
     //REMOVE
     if (cmd.toLowerCase() === `!remove`) {
-        if (!isMod(message.member)) return message.channel.send('You do not have permission to do that.')
+        if (!isMod(message.member)) return message.channel.send({ content: 'You do not have permission to do that.'})
         const member = message.mentions.members.first()
         const playerId = member && member.user ? member.user.id : null
-        if (!playerId) return message.channel.send(`Please specify the player you wish to remove.`)
-        const tournaments = await Entry.findAll({ where: { playerId: playerId }, include: Tournament }).map((e) => e.tournament).filter((t) => t.guildId === message.guild.id)
-        if (!tournaments.length) return message.channel.send(`That user is not in any tournaments.`)
+        if (!playerId) return message.channel.send({ content: `Please specify the player you wish to remove.`})
+        const tournaments = [...await Entry.findAll({ where: { playerId: playerId }, include: Tournament })].map((e) => e.tournament).filter((t) => t.guildId === message.guild.id)
+        if (!tournaments.length) return message.channel.send({ content: `That user is not in any tournaments.`})
         const tournament = await selectTournament(message, tournaments, maid)
         const entry = await Entry.findOne({ where: { playerId: playerId, tournamentId: tournament.id }, include: Player})
-        if (!entry) return message.channel.send(`That user is not in any tournaments.`)
+        if (!entry) return message.channel.send({ content: `That user is not in any tournaments.`})
 
         return removeParticipant(message, member, entry, tournament, false)
     }
@@ -501,8 +501,8 @@ client.on('message', async (message) => {
     //LEGAL
     if (legalcom.includes(cmd)) {
         const player = await Player.findOne({ where: { id: maid } })
-        if (!player) return message.channel.send(`Sorry.`)
-        message.channel.send("Please check your DMs.")
+        if (!player) return message.channel.send({ content: `Sorry.`})
+        message.channel.send({ content: "Please check your DMs."})
         const issues = await checkDeckList(message.member, player)
         if (!issues) return
 
@@ -512,17 +512,17 @@ client.on('message', async (message) => {
             if (issues['forbiddenCards'].length) response += `\n\nThe following cards are forbidden:\n${issues['forbiddenCards'].join('\n')}`
             if (issues['limitedCards'].length) response += `\n\nThe following cards are limited:\n${issues['limitedCards'].join('\n')}`
             if (issues['semiLimitedCards'].length) response += `\n\nThe following cards are semi-limited:\n${issues['semiLimitedCards'].join('\n')}`
-            return message.author.send(response)
+            return message.author.send({ content: response })
         } else {
-            return message.author.send(`Congrats, your Edison Format deck is perfectly legal! ${dandy}`)
+            return message.author.send({ content: `Congrats, your Edison Format deck is perfectly legal! ${dandy}`})
         }
     }
 
     //BANLIST
     if (banscom.includes(cmd)) {
-        const forbidden = await Status.findAll({ where: { mar10: 'forbidden' }, order: [["name", "ASC"]] }).map((s) => s.name)
-        const limited = await Status.findAll({ where: { mar10: 'limited' }, order: [["name", "ASC"]] }).map((s) => s.name)
-        const semilimited = await Status.findAll({ where: { mar10: 'semi-limited' }, order: [["name", "ASC"]] }).map((s) => s.name)
+        const forbidden = [...await Status.findAll({ where: { mar10: 'forbidden' }, order: [["name", "ASC"]] })].map((s) => s.name)
+        const limited = [...await Status.findAll({ where: { mar10: 'limited' }, order: [["name", "ASC"]] })].map((s) => s.name)
+        const semilimited = [...await Status.findAll({ where: { mar10: 'semi-limited' }, order: [["name", "ASC"]] })].map((s) => s.name)
 
         if (!forbidden.length) forbidden.push(`N/A`)
         if (!limited.length) limited.push(`N/A`)
@@ -536,14 +536,14 @@ client.on('message', async (message) => {
         `\n\n**The following cards are semi-limited:**` +
         `\n${semilimited.join("\n")}`
 
-        message.channel.send(`I messaged you the Forbidden & Limited list for Edison Format. ${dandy}`)
-        return message.author.send(banlist)
+        message.channel.send({ content: `I messaged you the Forbidden & Limited list for Edison Format. ${dandy}`})
+        return message.author.send({ content: banlist })
     }
 
     //AVATAR
     if (pfpcom.includes(cmd)) {
         const user = message.mentions.users.first() || message.author
-        return message.channel.send(user.displayAvatarURL())
+        return message.channel.send({ content: user.displayAvatarURL()})
     }
 
     //DUELINGBOOK NAME
@@ -552,17 +552,17 @@ client.on('message', async (message) => {
         const id = member ? member.user.id : maid
         const player = await Player.findOne({ where: { id } })
         if (!player) return
-        if (member && player.duelingBook) return message.channel.send(`${player.name}'s DuelingBook username is: ${player.duelingBook}.`)
-        if (member && !player.duelingBook) return message.channel.send(`${player.name} does not have a DuelingBook username in our the database.`)
+        if (member && player.duelingBook) return message.channel.send({ content: `${player.name}'s DuelingBook username is: ${player.duelingBook}.`})
+        if (member && !player.duelingBook) return message.channel.send({ content: `${player.name} does not have a DuelingBook username in our the database.`})
 
         if (marr.length > 1) {
             player.duelingBook = marr.slice(1, marr.length).join(' ')
             await player.save()
-            return message.channel.send(`Your DuelingBook username has been set to: ${player.duelingBook}.`)
+            return message.channel.send({ content: `Your DuelingBook username has been set to: ${player.duelingBook}.`})
         } else if (player.duelingBook) {
-            return message.channel.send(`Your DuelingBook username is: ${player.duelingBook}.`)
+            return message.channel.send({ content: `Your DuelingBook username is: ${player.duelingBook}.`})
         } else {
-            return message.channel.send(`You do not have a DuelingBook username in our database. You can type **!db** followed by your username to save it.`)
+            return message.channel.send({ content: `You do not have a DuelingBook username in our database. You can type **!db** followed by your username to save it.`})
         }
     }
 
@@ -571,19 +571,19 @@ client.on('message', async (message) => {
         const playerId = message.mentions.users.first() ? message.mentions.users.first().id : maid
         const isAuthor = playerId === maid
         if(!isMod(message.member) && !isAuthor) {
-            return message.channel.send(`You do not have permission to do that.`)
+            return message.channel.send({ content: `You do not have permission to do that.`})
         } else {
             const player = await Player.findOne({ where: { id: playerId } })
-            if (!player) return message.channel.send(`${isAuthor ? 'You are' : 'That player is'} not in the database.`) 
+            if (!player) return message.channel.send({ content: `${isAuthor ? 'You are' : 'That player is'} not in the database.`}) 
             const tournaments = await Tournament.findAll({ where: { state: 'pending', guildId: mgid }, order: [['createdAt', 'ASC']] })
             const count = await Tournament.count({ where: { state: 'underway', guildId: mgid } })
             const tournament = await selectTournament(message, tournaments, maid)
-            if (!tournament && count) return message.channel.send(`Sorry, the tournament already started.`)
-            if (!tournament && !count) return message.channel.send(`There is no active tournament.`)
+            if (!tournament && count) return message.channel.send({ content: `Sorry, the tournament already started.`})
+            if (!tournament && !count) return message.channel.send({ content: `There is no active tournament.`})
             const entry = await Entry.findOne({ where: { playerId, tournamentId: tournament.id } })
-            if (!entry) return message.channel.send(`${isAuthor ? 'You are' : 'That player is'} not registered for ${tournament.name}.`)
-            message.channel.send(`Please check your DMs.`)
-            return message.author.send(`${player.name}'s deck link for ${tournament.name} is: ${entry.url}.`)    
+            if (!entry) return message.channel.send({ content: `${isAuthor ? 'You are' : 'That player is'} not registered for ${tournament.name}.`})
+            message.channel.send({ content: `Please check your DMs.`})
+            return message.author.send({ content: `${player.name}'s deck link for ${tournament.name} is: ${entry.url}.`})    
         }
     }
 
@@ -600,7 +600,7 @@ client.on('message', async (message) => {
                     roleName: 'Dueling Book'
                 })
             }
-            return message.channel.send(`You now have the Dueling Book role.`)
+            return message.channel.send({ content: `You now have the Dueling Book role.`})
         } else {
             const membership = await Membership.findOne({ where: { playerId: player.id, guildId: mgid } })
             const role = await Role.findOne({ where: { membershipId: membership.id, roleId: rankedRole } })
@@ -608,7 +608,7 @@ client.on('message', async (message) => {
                 await role.destroy()
             } 
             message.member.roles.remove(rankedRole)
-            return message.channel.send(`You no longer have the Dueling Book role.`)
+            return message.channel.send({ content: `You no longer have the Dueling Book role.`})
         }
     }
 
@@ -626,14 +626,14 @@ client.on('message', async (message) => {
         	.addField('Tournament Commands', '\n!join - Register for an upcoming tournament.\n!deck - View the deck list you submitted for a tournament. \n!resubmit - Resubmit your deck list for a tournament. \n!drop - Drop from a tournament. \n!bracket - Post the bracket link(s) for the current tournament(s).')
         	.addField('Server Commands', '\n!db - Set your DuelingBook username. \n!bot - View the RetroBot User Guide. \n!mod - View the Moderator Guide.');
 
-        message.author.send(botEmbed);
-        return message.channel.send("I messaged you the EdisonBot User Guide.")
+        message.author.send({ embeds: [botEmbed] })
+        return message.channel.send({ content: "I messaged you the EdisonBot User Guide."})
     }
 
     //MOD USER GUIDE
     if (cmd === `!mod`) {
         if (!isMod(message.member)) {
-            return message.channel.send("You do not have permission to do that.")
+            return message.channel.send({ content: "You do not have permission to do that."})
         } 
 
         const botEmbed = new Discord.MessageEmbed()
@@ -647,15 +647,15 @@ client.on('message', async (message) => {
             .addField('Mod Tournament Commands', '\n!create - (tournament name) - Create a new tournament. \n!signup - (@user) - Directly add a player to a bracket. \n!deck - (@user) - View the deck list a player submitted for a tournament.\n!noshow - (@user) - Report a no-show. \n!remove - (@user) - Remove a player from a bracket. \n!start - Start a tournament. \n!end (tournament name) - End a tournament. \n!destroy (tournament name) - Destroy a tournament.')
             .addField('Mod Server Commands', '\n!census - Update the information of all players in the database.');
 
-        message.author.send(botEmbed);
-        return message.channel.send("I messaged you the Mod-Only Guide.")
+        message.author.send({ embeds: [botEmbed] })
+        return message.channel.send({ content: "I messaged you the Mod-Only Guide."})
     }
 
     //STATS
     if (statscom.includes(cmd)) {
         const playerId = message.mentions.users.first() ? message.mentions.users.first().id : maid	
         const player = await Player.findOne({ where: { id: playerId } })
-        if (!player) return message.channel.send("That user is not in the database.")
+        if (!player) return message.channel.send({ content: "That user is not in the database."})
 
         const stats = await Stats.findOne({ 
             where: { 
@@ -690,7 +690,7 @@ client.on('message', async (message) => {
         const losses = stats ? stats.losses : 0
         const winrate = wins || losses ? `${(100 * wins / (wins + losses)).toFixed(2)}%` : 'N/A'		
         
-        return message.channel.send(
+        return message.channel.send({ content: 
             `${dandy} --- Edison Stats --- ${dandy}`
             + `\nName: ${player.name}`
             + `\nMedal: ${medal}`
@@ -698,14 +698,14 @@ client.on('message', async (message) => {
             + `\nElo Rating: ${elo}`
             + `\nWins: ${wins}, Losses: ${losses}`
             + `\nWin Rate: ${winrate}`
-        )
+        })
     }
 
     //RANK
     if (rankcom.includes(cmd)) {
         const x = parseInt(args[0]) || 10
-        if (x < 1) return message.channel.send("Please provide a number greater than 0.")
-        if (x > 100 || isNaN(x)) return message.channel.send("Please provide a number less than or equal to 100.")
+        if (x < 1) return message.channel.send({ content: "Please provide a number greater than 0."})
+        if (x > 100 || isNaN(x)) return message.channel.send({ content: "Please provide a number less than or equal to 100."})
 
         const all_stats = await Stats.findAll({ 
             where: {
@@ -723,21 +723,21 @@ client.on('message', async (message) => {
         const memberIds = [...membersMap.keys()]
         const filtered_stats = all_stats.filter((s) => memberIds.includes(s.playerId))
         const top_stats = filtered_stats.slice(0, x)
-        if (!top_stats.length) return message.channel.send(`I'm sorry, we don't have any Edison players.`)
+        if (!top_stats.length) return message.channel.send({ content: `I'm sorry, we don't have any Edison players.`})
         const results = []
         top_stats.length === 1 ? results[0] = `${dandy} --- The Best Edison Player --- ${dandy}`
         : results[0] = `${dandy} --- Top ${top_stats.length} Edison Players --- ${dandy}`
 
         for (let i = 0; i < top_stats.length; i++) results[i+1] = `${(i+1)}. ${getMedal(top_stats[i].elo)} ${top_stats[i].player.name}`
-        for (let i = 0; i < results.length; i += 30) message.channel.send(results.slice(i, i+30))
+        for (let i = 0; i < results.length; i += 30) message.channel.send({ content: results.slice(i, i+30)})
         return
     }
 
     //LOSS
     if (losscom.includes(cmd)) {
         const opid = message.mentions.users.first() ? message.mentions.users.first().id : null	
-        if (!opid) return message.channel.send(`No player specified.`)
-        if (opid === maid) return message.channel.send(`You cannot lose a match to yourself.`)
+        if (!opid) return message.channel.send({ content: `No player specified.`})
+        if (opid === maid) return message.channel.send({ content: `You cannot lose a match to yourself.`})
         if (await isNewUser(opid)) await createPlayer(message.mentions.members.first())
         const winner = message.guild.members.cache.get(opid)
         const winningPlayer = await Player.findOne({ where: { id: opid } })
@@ -749,10 +749,10 @@ client.on('message', async (message) => {
         if (!lCount) await Stats.create({ playerId: maid, format: 'edison' })
         const loserStats = await Stats.findOne({ where: { playerId: maid, format: 'edison' } })
         
-        if (winner && winner.user.bot) return message.channel.send(`Sorry, Bots do not play Edison Format... *yet*.`)
-        if (opid.length < 17 || opid.length > 18) return message.channel.send(`To report a loss, type **!loss @opponent**.`)
-        if (!losingPlayer|| !loserStats) return message.channel.send(`You are not in the database.`)
-        if (!winningPlayer || !winnerStats) return message.channel.send(`That user is not in the database.`)
+        if (winner && winner.user.bot) return message.channel.send({ content: `Sorry, Bots do not play Edison Format... *yet*.`})
+        if (opid.length < 17 || opid.length > 18) return message.channel.send({ content: `To report a loss, type **!loss @opponent**.`})
+        if (!losingPlayer|| !loserStats) return message.channel.send({ content: `You are not in the database.`})
+        if (!winningPlayer || !winnerStats) return message.channel.send({ content: `That user is not in the database.`})
  
         const loserHasTourRole = isTourPlayer(message.member)
         const winnerHasTourRole = isTourPlayer(winner)
@@ -812,8 +812,8 @@ client.on('message', async (message) => {
                     const tournament = await selectTournament(message, tournaments, message.member.user.id)
                     if (tournament) {
                         isTournamentMatch = true
-                        if (tournament.state === 'pending') return message.channel.send(`Sorry, ${tournament.name} has not started yet.`)
-                        if (tournament.state !== 'underway') return message.channel.send(`Sorry, ${tournament.name} is not underway.`)
+                        if (tournament.state === 'pending') return message.channel.send({ content: `Sorry, ${tournament.name} has not started yet.`})
+                        if (tournament.state !== 'underway') return message.channel.send({ content: `Sorry, ${tournament.name} is not underway.`})
                         const success = await processMatchResult(message, winningPlayer, losingPlayer, tournament)
                         if (!success) return
                     } else {
@@ -861,23 +861,23 @@ client.on('message', async (message) => {
             })
         }
 
-        return message.channel.send(`${losingPlayer.name}, your Edison Format ${isTournamentMatch ? 'Tournament ' : ''}loss to ${winningPlayer.name} has been recorded.`)
+        return message.channel.send({ content: `${losingPlayer.name}, your Edison Format ${isTournamentMatch ? 'Tournament ' : ''}loss to ${winningPlayer.name} has been recorded.`})
     }
 
     //MANUAL
     if (manualcom.includes(cmd)) {
-        if (!isMod(message.member)) return message.channel.send(`You do not have permission to do that.`)
+        if (!isMod(message.member)) return message.channel.send({ content: `You do not have permission to do that.`})
 
         const usersMap = message.mentions.users
         const userIds = [...usersMap.keys()]	
         const winnerId = message.mentions.users.first() ? message.mentions.users.first().id : args.length > 0 ? args[0]	: null
         const loserId = userIds.length > 1 ? userIds[1] : args.length > 1 ? args[1] : null	
-        if (!winnerId || !loserId) return message.channel.send(`Please specify 2 players.`)
-        if (winnerId === loserId) return message.channel.send(`Please specify 2 different players.`)
+        if (!winnerId || !loserId) return message.channel.send({ content: `Please specify 2 players.`})
+        if (winnerId === loserId) return message.channel.send({ content: `Please specify 2 different players.`})
 
         const winner = message.guild.members.cache.get(winnerId)
         const loser = message.guild.members.cache.get(loserId)
-        if ((winner && winner.user.bot) ||  (loser && loser.user.bot)  ) return message.channel.send(`Sorry, Bots do not play Edison Format... *yet*.`)
+        if ((winner && winner.user.bot) ||  (loser && loser.user.bot)  ) return message.channel.send({ content: `Sorry, Bots do not play Edison Format... *yet*.`})
 
         if (winner && await isNewUser(winnerId)) await createPlayer(winner)
         if (loser && await isNewUser(loserId)) await createPlayer(loser)
@@ -891,8 +891,8 @@ client.on('message', async (message) => {
         if (!lCount) await Stats.create({ playerId: loserId, format: 'edison' })
         const loserStats = await Stats.findOne({ where: { playerId: loserId, format: 'edison' } })
 
-        if (!losingPlayer || !loserStats) return message.channel.send(`Sorry, <@${loserId}> is not in the database.`)
-        if (!winningPlayer || !winnerStats) return message.channel.send(`Sorry, <@${winnerId}> is not in the database.`)
+        if (!losingPlayer || !loserStats) return message.channel.send({ content: `Sorry, <@${loserId}> is not in the database.`})
+        if (!winningPlayer || !winnerStats) return message.channel.send({ content: `Sorry, <@${winnerId}> is not in the database.`})
 
         const loserHasTourRole = await isTourPlayer(loser)
         const winnerHasTourRole = await isTourPlayer(winner)
@@ -952,8 +952,8 @@ client.on('message', async (message) => {
                     const tournament = await selectTournament(message, tournaments, message.member.user.id)
                     if (tournament) {
                         isTournamentMatch = true
-                        if (tournament.state === 'pending') return message.channel.send(`Sorry, ${tournament.name} has not started yet.`)
-                        if (tournament.state !== 'underway') return message.channel.send(`Sorry, ${tournament.name} is not underway.`)
+                        if (tournament.state === 'pending') return message.channel.send({ content: `Sorry, ${tournament.name} has not started yet.`})
+                        if (tournament.state !== 'underway') return message.channel.send({ content: `Sorry, ${tournament.name} is not underway.`})
                         const success = await processMatchResult(message, winningPlayer, losingPlayer, tournament)
                         if (!success) return
                     } else {
@@ -1001,30 +1001,30 @@ client.on('message', async (message) => {
             })
         }
 
-        return message.channel.send(`A manual Edison Format ${isTournamentMatch ? 'Tournament ' : ''}loss by ${losingPlayer.name} to ${winningPlayer.name} has been recorded.`)		
+        return message.channel.send({ content: `A manual Edison Format ${isTournamentMatch ? 'Tournament ' : ''}loss by ${losingPlayer.name} to ${winningPlayer.name} has been recorded.`})		
     }
 
     //NO SHOW
     if (noshowcom.includes(cmd)) {
-        if (!isMod(message.member)) return message.channel.send(`You do not have permission to do that.`)
+        if (!isMod(message.member)) return message.channel.send({ content: `You do not have permission to do that.`})
 
         const noShowId = message.mentions.users.first() ? message.mentions.users.first().id : args.length > 0 ? args[0]	: null
-        if (!noShowId) return message.channel.send("Please specify a player.")
+        if (!noShowId) return message.channel.send({ content: "Please specify a player."})
         const noshow = message.guild.members.cache.get(noShowId)
-        if ((noshow && noshow.user.bot)) return message.channel.send(`Sorry, Bots do not play Edison Format... *yet*.`)
+        if ((noshow && noshow.user.bot)) return message.channel.send({ content: `Sorry, Bots do not play Edison Format... *yet*.`})
         if (noshow && await isNewUser(noShowId)) await createPlayer(noshow)
         const noShowPlayer = await Player.findOne({ where: { id: noShowId } })
-        if (!noShowPlayer) return message.channel.send(`Sorry, <@${noShowId}> is not in the database.`)
-        const tournaments = await Entry.findAll({ where: { playerId: noShowId }, include: Tournament }).map((e) => e.tournament).filter((t) => t.guildId === message.guild.id)
-        if (!tournaments.length || !noshow.roles.cache.some(role => role.id === tourRole)) return message.channel.send(`Sorry, ${noShowPlayer.name} is not any tournaments.`)
+        if (!noShowPlayer) return message.channel.send({ content: `Sorry, <@${noShowId}> is not in the database.`})
+        const tournaments = [...await Entry.findAll({ where: { playerId: noShowId }, include: Tournament })].map((e) => e.tournament).filter((t) => t.guildId === message.guild.id)
+        if (!tournaments.length || !noshow.roles.cache.some(role => role.id === tourRole)) return message.channel.send({ content: `Sorry, ${noShowPlayer.name} is not any tournaments.`})
      
         const tournament = await selectTournament(message, tournaments, maid)
         if (!tournament) return
-        if (tournament.state === 'pending') return message.channel.send(`Sorry, ${tournament.name} has not started yet.`)
-        if (tournament.state !== 'underway') return message.channel.send(`Sorry, ${tournament.name} is not underway.`)
+        if (tournament.state === 'pending') return message.channel.send({ content: `Sorry, ${tournament.name} has not started yet.`})
+        if (tournament.state !== 'underway') return message.channel.send({ content: `Sorry, ${tournament.name} is not underway.`})
         
         const noShowEntry = await Entry.findOne({ where: { playerId: noShowId, tournamentId: tournament.id } })
-        if (!noShowEntry) return message.channel.send(`Sorry I could not find that player's tournament entry in the database.`)
+        if (!noShowEntry) return message.channel.send({ content: `Sorry I could not find that player's tournament entry in the database.`})
 
         const matchesArr = await getMatches(tournament.id)
         let winnerParticipantId = false
@@ -1036,12 +1036,12 @@ client.on('message', async (message) => {
         }
 
         const winningEntry = await Entry.findOne({ where: { participantId: winnerParticipantId, tournamentId: tournament.id }, include: Player })
-        if (!winningEntry) return message.channel.send(`Error: could not find opponent.`)
+        if (!winningEntry) return message.channel.send({ content: `Error: could not find opponent.`})
 
         const success = await processMatchResult(message, winningEntry.player, noShowPlayer, tournament, true)
         if (!success) return
 
-        return message.channel.send(`${noShowPlayer.name}, your Edison Format Tournament loss to <@${winningEntry.playerId}> has been recorded as a no-show.`)
+        return message.channel.send({ content: `${noShowPlayer.name}, your Edison Format Tournament loss to <@${winningEntry.playerId}> has been recorded as a no-show.`})
     }
 
     //H2H
@@ -1051,25 +1051,25 @@ client.on('message', async (message) => {
         const player1Id = message.mentions.users.first() ? message.mentions.users.first().id : null	
         const player2Id = userIds.length > 1 ? userIds[1] : maid	
 
-        if (!player1Id) return message.channel.send("Please specify at least 1 other player.")
-        if (player1Id === player2Id) return message.channel.send(`Please specify 2 different players.`)
+        if (!player1Id) return message.channel.send({ content: "Please specify at least 1 other player."})
+        if (player1Id === player2Id) return message.channel.send({ content: `Please specify 2 different players.`})
 
         const player1 = await Player.findOne({ where: { id: player1Id } })
         const player2 = await Player.findOne({ where: { id: player2Id } })
         
-        if (!player1 && player2Id === maid) return message.channel.send(`That user is not in the database.`)
-        if (!player1 && player2Id !== maid) return message.channel.send(`The first user is not in the database.`)
-        if (!player2 && player2Id === maid) return message.channel.send(`You are not in the database.`)
-        if (!player2 && player2Id !== maid) return message.channel.send(`The second user is not in the database.`)
+        if (!player1 && player2Id === maid) return message.channel.send({ content: `That user is not in the database.`})
+        if (!player1 && player2Id !== maid) return message.channel.send({ content: `The first user is not in the database.`})
+        if (!player2 && player2Id === maid) return message.channel.send({ content: `You are not in the database.`})
+        if (!player2 && player2Id !== maid) return message.channel.send({ content: `The second user is not in the database.`})
 
         const p1Wins = await Match.count({ where: { winnerId: player1Id, loserId: player2Id, format: 'edison' } })
         const p2Wins = await Match.count({ where: { winnerId: player2Id, loserId: player1Id, format: 'edison' } })
         
-        return message.channel.send(
+        return message.channel.send({ content: 
             `${dandy} --- H2H Edison Results --- ${dandy}`+
             `\n${player1.name} has won ${p1Wins}x`+
             `\n${player2.name} has won ${p2Wins}x`
-        )
+        })
     }
 
     //UNDO
@@ -1084,12 +1084,12 @@ client.on('message', async (message) => {
         const loserStats = await Stats.findOne({ where: { playerId: loserId, format: 'edison' } })
         
         const prompt = (isMod(message.member) ? '' : ' Please get a Moderator to help you.')
-        if (maid !== loserId && !isMod(message.member)) return message.channel.send(`You did not participate in the last recorded match.${prompt}`)
+        if (maid !== loserId && !isMod(message.member)) return message.channel.send({ content: `You did not participate in the last recorded match.${prompt}`})
 
-        if (!winnerStats.backupElo && maid !== loserId) return message.channel.send(`${winningPlayer.name} has no backup stats.${prompt}`)
-        if (!winnerStats.backupElo && maid === loserId) return message.channel.send(`Your last opponent, ${winningPlayer.name}, has no backup stats.${prompt}`)
-        if (!loserStats.backupElo && maid !== loserId) return message.channel.send(`${losingPlayer.name} has no backup stats.${prompt}`)
-        if (!loserStats.backupElo && maid === loserId) return message.channel.send(`You have no backup stats.${prompt}`)
+        if (!winnerStats.backupElo && maid !== loserId) return message.channel.send({ content: `${winningPlayer.name} has no backup stats.${prompt}`})
+        if (!winnerStats.backupElo && maid === loserId) return message.channel.send({ content: `Your last opponent, ${winningPlayer.name}, has no backup stats.${prompt}`})
+        if (!loserStats.backupElo && maid !== loserId) return message.channel.send({ content: `${losingPlayer.name} has no backup stats.${prompt}`})
+        if (!loserStats.backupElo && maid === loserId) return message.channel.send({ content: `You have no backup stats.${prompt}`})
 
         winnerStats.elo = winnerStats.backupElo
         winnerStats.backupElo = null
@@ -1102,14 +1102,14 @@ client.on('message', async (message) => {
         await loserStats.save()
 
         await lastMatch.destroy()
-        return message.channel.send(`The last Edison Format match in which ${winningPlayer.name} defeated ${losingPlayer.name} has been erased.`)
+        return message.channel.send({ content: `The last Edison Format match in which ${winningPlayer.name} defeated ${losingPlayer.name} has been erased.`})
     }
 
     //CENSUS
     // Use this command to update every player's username and tag to match their Discord account.
     // It also creates new players if they are not in the database (i.e. they joined while bot was down).
     if (cmd === `!census`) { 
-        if (!isMod(message.member)) return message.channel.send("You do not have permission to do that.")
+        if (!isMod(message.member)) return message.channel.send({ content: "You do not have permission to do that."})
         const members_map = await message.guild.members.fetch()
         const members = [...members_map.values()]
         const rolesMap = message.guild.roles.cache
@@ -1156,12 +1156,12 @@ client.on('message', async (message) => {
             }
         }
 
-        return message.channel.send(
+        return message.channel.send({ content: 
             `You added the following to the database:` +
             `\n- ${createCount} new ${createCount === 1 ? 'player' : 'players'}` +
             `\n- ${memberCount} new ${memberCount === 1 ? 'member' : 'members'}` +
             `\n- ${updateCount} updated ${updateCount === 1 ? 'player' : 'players'}` +
             `\n- ${roleCount} updated ${roleCount === 1 ? 'role' : 'roles'}`
-        )
+        })
     }
 })
