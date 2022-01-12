@@ -134,8 +134,8 @@ const saveYDK = async (player, url, tournamentName = 'other') => {
 //CHECK DECK LIST
 const checkDeckList = async (member, player, tournamentName) => {  
     const filter = m => m.author.id === member.user.id
-    const msg = await member.user.send({ content: `Please provide a duelingbook.com/deck link for the Edison Format ${dandy} deck you would like to check.`})
-    const collected = await msg.channel.awaitMessages(filter, {
+    const { channel } = await member.user.send({ content: `Please provide a duelingbook.com/deck link for the Edison Format ${dandy} deck you would like to check.`})
+    return await channel.awaitMessages(filter, {
         max: 1,
         time: 180000
     }).then(async collected => {
@@ -153,8 +153,6 @@ const checkDeckList = async (member, player, tournamentName) => {
         member.send({ content: `Sorry, time's up. Go back to the server and try again.`})
         return false
     })
-
-    return collected
 }
 
 //GET DECK TYPE

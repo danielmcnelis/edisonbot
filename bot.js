@@ -340,7 +340,7 @@ client.on('messageCreate', async (message) => {
             )
         }
 
-        return message.channel.send({ content: results.join('\n\n')})
+        return message.channel.send({ content: results.join('\n\n').toString() })
     }
 
     //JOIN
@@ -512,7 +512,7 @@ client.on('messageCreate', async (message) => {
             if (issues['forbiddenCards'].length) response += `\n\nThe following cards are forbidden:\n${issues['forbiddenCards'].join('\n')}`
             if (issues['limitedCards'].length) response += `\n\nThe following cards are limited:\n${issues['limitedCards'].join('\n')}`
             if (issues['semiLimitedCards'].length) response += `\n\nThe following cards are semi-limited:\n${issues['semiLimitedCards'].join('\n')}`
-            return message.author.send({ content: response })
+            return message.author.send({ content: response.toString() })
         } else {
             return message.author.send({ content: `Congrats, your Edison Format deck is perfectly legal! ${dandy}`})
         }
@@ -537,7 +537,7 @@ client.on('messageCreate', async (message) => {
         `\n${semilimited.join("\n")}`
 
         message.channel.send({ content: `I messaged you the Forbidden & Limited list for Edison Format. ${dandy}`})
-        return message.author.send({ content: banlist })
+        return message.author.send({ content: `${banlist}` })
     }
 
     //AVATAR
@@ -729,7 +729,7 @@ client.on('messageCreate', async (message) => {
         : results[0] = `${dandy} --- Top ${top_stats.length} Edison Players --- ${dandy}`
 
         for (let i = 0; i < top_stats.length; i++) results[i+1] = `${(i+1)}. ${getMedal(top_stats[i].elo)} ${top_stats[i].player.name}`
-        for (let i = 0; i < results.length; i += 30) message.channel.send({ content: results.slice(i, i+30)})
+        for (let i = 0; i < results.length; i += 30) message.channel.send({ content: results.slice(i, i+30).join('\n').toString() })
         return
     }
 
