@@ -627,7 +627,7 @@ client.on('messageCreate', async (message) => {
 	        .setDescription('A Rankings and Tournament Bot for EdisonFormat.com.\n' )
 	        .setURL('https://edisonformat.com/')
 	        .setAuthor('Jazz#2704', 'https://i.imgur.com/wz5TqmR.png', 'https://edisonformat.com/')
-            .setThumbnail('https://i.imgur.com/9lMCJJH.png')
+            .setThumbnail('https://i.imgur.com/9jhJY11.png')
         	.addField('Ranked Play Commands', '\n!stats - (blank or @user) - Post a player’s stats. \n!loss - (@user) - Report a loss to another player. \n!top - (n) - Post the channel’s top rated players (100 max). \n!h2h - (@user + @user) - Post the H2H record between 2 players. \n!role - Add or remove the Ranked Players role. \n!undo - Undo the last loss if you made a mistake. \n')
         	.addField('Format Info Commands', '\n!legal - Privately check if your deck is legal. \n!list - View the Forbidden and Limited list. \n')
         	.addField('Tournament Commands', '\n!join - Register for an upcoming tournament.\n!deck - View the deck list you submitted for a tournament. \n!resubmit - Resubmit your deck list for a tournament. \n!drop - Drop from a tournament. \n!bracket - Post the bracket link(s) for the current tournament(s).')
@@ -649,7 +649,7 @@ client.on('messageCreate', async (message) => {
 	        .setDescription('A Rankings and Tournament Bot for EdisonFormat.com.\n' )
 	        .setURL('https://edisonformat.com/')
 	        .setAuthor('Jazz#2704', 'https://i.imgur.com/wz5TqmR.png', 'https://edisonformat.com/')
-        	.setThumbnail('https://i.imgur.com/9lMCJJH.png')
+        	.setThumbnail('https://i.imgur.com/9jhJY11.png')
         	.addField('Mod Ranked Play Commands', '\n!manual - (@winner + @loser) - Manually record a match result. \n!undo - Undo the most recent loss, even if you did not report it.')
             .addField('Mod Tournament Commands', '\n!create - (tournament name) - Create a new tournament. \n!signup - (@user) - Directly add a player to a bracket. \n!deck - (@user) - View the deck list a player submitted for a tournament.\n!noshow - (@user) - Report a no-show. \n!remove - (@user) - Remove a player from a bracket. \n!start - Start a tournament. \n!end (tournament name) - End a tournament. \n!destroy (tournament name) - Destroy a tournament.')
             .addField('Mod Server Commands', '\n!census - Update the information of all players in the database.');
