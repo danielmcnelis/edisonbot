@@ -114,7 +114,6 @@ client.on('messageCreate', async (message) => {
         if (!args.length) return message.channel.send({ content: `Please provide a name for the new tournament.`})
         const tournament_type = await getTournamentType(message)
         if (!tournament_type) return message.channel.send({ content: `Please select a valid tournament type.`})
-        if (!message.guild.channels.cache.get(tournament_channel)) return message.channel.send({ content: `Please provide a valid tournament channel.`})
         const str = generateRandomString(10, '0123456789abcdefghijklmnopqrstuvwxyz')
         const name = args[0].replace(/[^\w\s]/gi, "_").replace(/ /g,'')
 
