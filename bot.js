@@ -361,7 +361,7 @@ client.on('messageCreate', async (message) => {
         const deckListUrl = await getDeckList(message.member, player, tournament.name)
         if (!deckListUrl) return
         const deckName = await getDeckName(message.member, player)
-        const deckType = await getDeckType(message.member, tournament.name)
+        const deckType = await getDeckType(player, tournament.name)
         if (!deckType) return
         const deckCategory = getDeckCategory(deckType)
         if (!deckCategory) return
