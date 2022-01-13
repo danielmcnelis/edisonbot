@@ -16,7 +16,7 @@ const { checkDeckList, getDeckType } = require('./functions/deck.js')
 const { uploadDeckFolder } = require('./functions/drive.js')
 const { addSheet, makeSheet, writeToSheet } = require('./functions/sheets.js')
 const { askForDBName, checkPairing, findNoShowOpponent, createSheetData, getDeckList, getDeckName, getTournamentType, getMatches, processMatchResult, postParticipant, removeParticipant, seed, selectTournament } = require('./functions/tournament.js')
-const { assignRoles, capitalize, createMembership, createPlayer, fetchCardNames, getDeckCategory, getMedal, generateRandomString, isAdmin, isMod, isNewMember, isNewUser, isProgrammer, isTourPlayer } = require('./functions/utility.js')
+const { assignRoles, capitalize, createMembership, createPlayer, fetchCardNames, getDeckCategory, getMedal, generateRandomString, isAdmin, isMod, isNewMember, isNewUser, isProgrammer, isTourPlayer, search } = require('./functions/utility.js')
 
 // STATIC IMPORTS
 const { contactChannel, signupChannel, welcomeChannel } = require('./static/channels.json')
@@ -82,9 +82,13 @@ client.on('messageCreate', async (message) => {
     //CARD SEARCH USING CURLY BRACKETS
     if (!message.content.startsWith("!") && message.content.includes(`{`) && message.content.includes(`}`)) { 
         const query = message.content.slice(message.content.indexOf('{') + 1, message.content.indexOf('}'))
-        const cardEmbed = await search(query, fuzzyCards)
+        const { cardEmbed, attachment } = await search(query, fuzzyCards)
         if (!cardEmbed) return message.channel.send({ content: `Could not find card: "${query}".`})
-        else return message.channel.send({ embeds: [cardEmbed] })
+        if (attachment) {
+            return message.channel.send({ embeds: [cardEmbed], files: [attachment] })
+        } else {
+            return message.channel.send({ embeds: [cardEmbed] })
+        }
     }
 
     //PING 
