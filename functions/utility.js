@@ -3,6 +3,7 @@
 
 //DATABASE IMPORTS
 const { Card, Membership, Player, Role } = require('../db/index.js')
+const { Op } = require('sequelize')
 
 //STATIC IMPORTS
 const { mad, sad, rock, bronze, silver, gold, platinum, diamond, master, legend, deity } = require('../static/emojis.json')
@@ -257,7 +258,6 @@ const search = async (query, fuzzyCards) => {
 
 	const thumbnail = attachment ? `attachment://${card.image_file}` : `https://ygoprodeck.com/pics/${card.image_file}`
 	const cardEmbed = new Discord.MessageEmbed()
-	if (attachment) cardEmbed.attachFiles(attachment) 
 	cardEmbed.setColor(color)
 	cardEmbed.setTitle(card.name)
 	cardEmbed.setThumbnail(thumbnail)
