@@ -197,19 +197,20 @@ const createSheetData = async (tournament) => {
 
 // GET TOURNAMENT TYPE
 const getTournamentType = async (message) => {
-    let tournamentType
     const filter = m => m.author.id === message.author.id
-	const { channel } = await message.channel.send({ content: `What type of tournament is this?\n(1) Single Elimination\n(2) Double Elimination\n(3) Swiss\n(4) Round Robin`})
-	return await channel.awaitMessages(filter, {
+	message.channel.send({ content: `What type of tournament is this?\n(1) Single Elimination\n(2) Double Elimination\n(3) Swiss\n(4) Round Robin`})
+	return await message.channel.awaitMessages(filter, {
 		max: 1,
 		time: 15000
 	}).then(collected => {
 		const response = collected.first().content.toLowerCase()
-        if (response.includes(1) || response.startsWith('single')) tournamentType = 'single elimination'
-        else if (response.includes(2) || response.startsWith('double')) tournamentType = 'double elimination'
-        else if (response.includes(3) || response.startsWith('swiss')) tournamentType = 'swiss'
-        else if (response.includes(4) || response.startsWith('round')) tournamentType = 'round robin'
-        else return 
+        const tournamentType = response.includes(1) || response.startsWith('single') ? 'single elimination' :
+            response.includes(2) || response.startsWith('double') ? 'double elimination' :
+            response.includes(3) || response.startsWith('swiss') ? 'swiss' :
+            response.includes(4) || response.startsWith('round') ? 'round robin' :
+            false
+
+        return tournamentType 
 	}).catch(err => {
 		console.log(err)
         message.channel.send({ content: `Sorry, time's up.`})
