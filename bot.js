@@ -29,7 +29,7 @@ const fuzzyCards = FuzzySet([], false)
 
 //READY
 client.on('ready', async () => {
-  console.log('EdisonBot is online!!')
+  console.log('EdisonBot is online!')
   const names = await fetchCardNames()
   names.forEach((card) => fuzzyCards.add(card))
 })
