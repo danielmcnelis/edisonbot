@@ -181,7 +181,7 @@ const findCard = async (query, fuzzyCards) => {
 const isAdmin = (member) => member.roles.cache.some(role => role.id === adminRole)
 
 //IS MOD?
-const isMod = (member) => member.roles.cache.some(role => role.id === modRole)
+const isMod = (member) => member.roles.cache.some(role => role.id === modRole || role.id === adminRole)
 
 //IS NEW MEMBER?
 const isNewUser = async (id) => !await Player.count({ where: { id } })
