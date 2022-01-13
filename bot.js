@@ -19,7 +19,7 @@ const { askForDBName, checkPairing, findNoShowOpponent, createSheetData, getDeck
 const { assignRoles, capitalize, createMembership, createPlayer, fetchCardNames, getDeckCategory, getMedal, generateRandomString, isAdmin, isMod, isNewMember, isNewUser, isProgrammer, isTourPlayer } = require('./functions/utility.js')
 
 // STATIC IMPORTS
-const { welcomeChannel } = require('./static/channels.json')
+const { contactChannel, signupChannel, welcomeChannel } = require('./static/channels.json')
 const { client } = require('./static/clients.js')
 const { botcom, bracketcom, dbcom, deckcom, dropcom, h2hcom, joincom, legalcom, banscom, losscom, manualcom, noshowcom, pfpcom, rankcom, rolecom, signupcom, startcom, statscom, undocom } = require('./static/commands.json')
 const { sad, EF, dandy, legend } = require('./static/emojis.json')
@@ -384,7 +384,7 @@ client.on('messageCreate', async (message) => {
             if (!new_entry) return message.channel.send({ content: `Error: Could not access database.`})
             message.member.roles.add(tourRole)
             message.author.send({ content: `Thanks! I have all the information we need from you. Good luck in the tournament!`})
-            return client.channels.cache.get(tournament.channelId).send({ content: `<@${player.id}> is now registered for ${tournament.name}!`})
+            return client.channels.cache.get(signupChannel).send({ content: `<@${player.id}> is now registered for ${tournament.name}!`})
         } else {
             await entry.update({
                 url: deckListUrl,
@@ -394,7 +394,7 @@ client.on('messageCreate', async (message) => {
             })
     
             message.author.send({ content: `Thanks! I have your updated deck list for the tournament.`})
-            return client.channels.cache.get(tournament.channelId).send({ content: `<@${player.id}> resubmitted their deck list for ${tournament.name}!`})
+            return client.channels.cache.get(signupChannel).send({ content: `<@${player.id}> resubmitted their deck list for ${tournament.name}!`})
         }
     }
 
@@ -446,7 +446,7 @@ client.on('messageCreate', async (message) => {
             if (!new_entry) return message.channel.send({ content: `Error: Could not access database.`})
             member.roles.add(tourRole)
             message.author.send({ content: `Thanks! I have all the information we need for ${player.name}!`})
-            return client.channels.cache.get(tournament.channelId).send({ content: `<@${player.id}> is now registered for ${tournament.name}!`})
+            return client.channels.cache.get(signupChannel).send({ content: `<@${player.id}> is now registered for ${tournament.name}!`})
         } else {
             await entry.update({
                 url: deckListUrl,
@@ -456,7 +456,7 @@ client.on('messageCreate', async (message) => {
             })
     
             message.author.send({ content: `Thanks! I have ${player.name}'s updated deck list for the tournament.`})
-            return client.channels.cache.get(tournament.channelId).send({ content: `A moderator resubmitted <@${player.id}>'s deck list for ${tournament.name}!`})
+            return client.channels.cache.get(signupcom).send({ content: `A moderator resubmitted <@${player.id}>'s deck list for ${tournament.name}!`})
         }
     }
 
