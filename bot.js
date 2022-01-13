@@ -591,7 +591,7 @@ client.on('messageCreate', async (message) => {
     if (rolecom.includes(cmd)) {
         if (!message.member.roles.cache.some(role => role.id === rankedRole)) {
 			message.member.roles.add(rankedRole)
-            const membership = await Membership.findOne({ where: { playerId: player.id, guildId: mgid } })
+            const membership = await Membership.findOne({ where: { playerId: maid, guildId: mgid } })
             const count = await Role.count({ where: { membershipId: membership.id, roleId: rankedRole } })
             if (!count) {
                 await Role.create({ 
@@ -602,7 +602,7 @@ client.on('messageCreate', async (message) => {
             }
             return message.channel.send({ content: `You now have the Dueling Book role.`})
         } else {
-            const membership = await Membership.findOne({ where: { playerId: player.id, guildId: mgid } })
+            const membership = await Membership.findOne({ where: { playerId: maid, guildId: mgid } })
             const role = await Role.findOne({ where: { membershipId: membership.id, roleId: rankedRole } })
             if (role) {
                 await role.destroy()
