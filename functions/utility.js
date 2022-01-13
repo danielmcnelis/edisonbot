@@ -1,9 +1,13 @@
 
 //UTILITY FUNCTIONS
 
+//MODULE IMPORTS
+const fs = require('fs')
+const Discord = require('discord.js')
+const { Op } = require('sequelize')
+
 //DATABASE IMPORTS
 const { Card, Membership, Player, Role } = require('../db/index.js')
-const { Op } = require('sequelize')
 
 //STATIC IMPORTS
 const { mad, sad, rock, bronze, silver, gold, platinum, diamond, master, legend, deity } = require('../static/emojis.json')
