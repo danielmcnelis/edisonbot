@@ -528,16 +528,24 @@ client.on('messageCreate', async (message) => {
         if (!limited.length) limited.push(`N/A`)
         if (!semilimited.length) semilimited.push(`N/A`)
 
-        const banlist = `**EDISON FORMAT ${dandy} - FORBIDDEN & LIMITED LIST**` +
-        `\n\n**The following cards are forbidden:**` +
-        `\n${forbidden.join("\n")}` +
-        `\n\n**The following cards are limited:**` +
-        `\n${limited.join("\n")}` +
-        `\n\n**The following cards are semi-limited:**` +
-        `\n${semilimited.join("\n")}`
+        const banlist = [
+            `**EDISON FORMAT ${dandy} - FORBIDDEN & LIMITED LIST**`,
+            ``,
+            `**The following cards are forbidden:**`,
+            ...forbidden,
+            ``,
+            `**The following cards are limited:**`,
+            ...limited,
+            ``,
+            `**The following cards are semi-limited:**`,
+            ...semilimited
+        ]
 
-        message.channel.send({ content: `I messaged you the Forbidden & Limited list for Edison Format. ${dandy}`})
-        return message.author.send({ content: `${banlist}` })
+        console.log('banlist', banlist)
+        console.log('banlist.length', banlist.length)
+
+        for (let i = 0; i < banlist.length; i += 40) message.author.send({ content: banlist.slice(i, i+40).join('\n').toString() })
+        return message.channel.send({ content: `I messaged you the Forbidden & Limited list for Edison Format. ${dandy}`})
     }
 
     //AVATAR
