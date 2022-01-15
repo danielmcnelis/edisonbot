@@ -1,7 +1,8 @@
 
 
 const { google } = require('googleapis')
-const { access_token, refresh_token, expiry_date } = require('../token.json')
+const token = require('../token.json')
+const { access_token, refresh_token, expiry_date } = token
 const { installed } = require('../credentials.json')
 const { client_secret, client_id, redirect_uris } = installed
 const fs = require('fs')
@@ -15,7 +16,7 @@ const generateNewToken = async (currentTime) => {
         "grant_type": "refresh_token"
      })
 
-  const token = {
+  const regeneratedToken = {
     access_token: data.access_token,
     refresh_token: refresh_token,
     scope: data.scope,
@@ -23,7 +24,7 @@ const generateNewToken = async (currentTime) => {
     expiry_date: currentTime + data.expires_in
   }
 
-  const tokenString = JSON.stringify(token);
+  const tokenString = JSON.stringify(regeneratedToken);
   fs.writeFileSync('../token.json', tokenString);
 }
 
@@ -46,7 +47,7 @@ const uploadDeckFolder = async (tournamentName) => {
     refresh_token
   )
 
-  oAuth2Client.setCredentials(googleDriveToken)
+  oAuth2Client.setCredentials(token)
   const drive = google.drive({ version: 'v4', auth: oAuth2Client})
 
   const fileMetadata = {
