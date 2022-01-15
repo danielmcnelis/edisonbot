@@ -64,7 +64,7 @@ const saveYDK = async (player, url, tournamentName = 'other') => {
 		await driver.get(url)
         console.log('driver got Url')
         await driver.wait(until.elementLocated(By.id('deck_card1')))
-        console.log('driver got Url')
+        console.log('driver found deck_card1')
         deck_arr = await driver.executeScript(get_deck)
         console.log('driver executed script')
     } catch (err) {
