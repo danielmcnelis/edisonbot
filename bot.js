@@ -14,9 +14,9 @@ const { Entry, Match, Matchup, Membership, Player, Role, Stats, Status, Tourname
 //FUNCTION IMPORTS
 const { checkDeckList, getDeckType } = require('./functions/deck.js')
 const { checkExpiryDate, uploadDeckFolder } = require('./functions/drive.js')
-const { addSheet, makeSheet, writeToSheet } = require('./functions/sheets.js')
+const { addSheet, connectToSheets, makeSheet, writeToSheet } = require('./functions/sheets.js')
 const { askForDBName, checkPairing, findNoShowOpponent, createSheetData, getDeckList, getDeckName, getTournamentType, getMatches, processMatchResult, postParticipant, removeParticipant, seed, selectTournament } = require('./functions/tournament.js')
-const { assignRoles, capitalize, createMembership, createPlayer, fetchCardNames, getDeckCategory, getMedal, generateRandomString, isAdmin, isMod, isNewMember, isNewUser, isProgrammer, isTourPlayer, search } = require('./functions/utility.js')
+const { assignRoles, capitalize, clearStatus, createMembership, createPlayer, fetchCardNames, getDeckCategory, getMedal, generateRandomString, isAdmin, isMod, isNewMember, isNewUser, isProgrammer, isTourPlayer, search } = require('./functions/utility.js')
 
 // STATIC IMPORTS
 const { contactChannel, signupChannel, welcomeChannel } = require('./static/channels.json')
@@ -278,11 +278,12 @@ client.on('messageCreate', async (message) => {
 		if (status === 200) { 
 			tournament.state = 'underway'
 			await tournament.save()
-			const spreadsheetId = await makeSheet(`${name} Deck Lists`, sheet1Data)
-			await addSheet(spreadsheetId, 'Summary')
-			await writeToSheet(spreadsheetId, 'Summary', 'RAW', sheet2Data)
-            await checkExpiryDate()
-			await uploadDeckFolder(name)
+            // await checkExpiryDate()
+            // const { sheets, oAuth2Client } = await connectToSheets()
+			// const spreadsheetId = await makeSheet(sheets, `${name} Deck Lists`, sheet1Data)
+			// await addSheet(sheets, oAuth2Client, spreadsheetId, 'Summary')
+			// await writeToSheet(sheets, spreadsheetId, 'Summary', 'RAW', sheet2Data)
+			// await uploadDeckFolder(name)
 			return message.channel.send({ content: `Let's go! Your tournament is starting now: https://challonge.com/${url} ${dandy}`})
 		} else {
 			return message.channel.send({ content: `Error: could not access Challonge.com.`})
@@ -299,33 +300,38 @@ client.on('messageCreate', async (message) => {
         if (!tournament) return message.channel.send({ content: `Could not find tournament: "${name}".`})
         const tournament_name = tournament.name
 
-        const { status } = await axios({
-            method: 'post',
-            url: `https://Chappell:${challongeAPIKey}@api.challonge.com/v1/tournaments/${tournament.id}/finalize.json`
-        })
-
-        if (status && status === 200) {
-            const entries = await Entry.findAll({ where: { tournamentId: tournament.id }})
-            for (let i = 0; i < entries.length; i++) {
-                const entry = entries[i]
-                const playerId = entry.playerId	
-                await entry.destroy()
-                const count = await Entry.count({ where: { playerId: playerId } })
-                if (count) {
-                    continue
-                } else { 
-                    const member = message.guild.members.cache.get(playerId)
-                    if (!member) continue
-                    member.roles.remove(tourRole)
-                }
-            }
-
-            await tournament.update({
-                state: 'complete'
+        try {
+            const { status } = await axios({
+                method: 'post',
+                url: `https://Chappell:${challongeAPIKey}@api.challonge.com/v1/tournaments/${tournament.id}/finalize.json`
             })
-            
-            return message.channel.send({ content: `Congrats! The results of ${tournament_name} ${dandy} have been finalized.`})
-        } else {
+    
+            if (status && status === 200) {
+                const entries = await Entry.findAll({ where: { tournamentId: tournament.id }})
+                for (let i = 0; i < entries.length; i++) {
+                    const entry = entries[i]
+                    const playerId = entry.playerId	
+                    await entry.destroy()
+                    const count = await Entry.count({ where: { playerId: playerId } })
+                    if (count) {
+                        continue
+                    } else { 
+                        const member = message.guild.members.cache.get(playerId)
+                        if (!member) continue
+                        member.roles.remove(tourRole)
+                    }
+                }
+    
+                await tournament.update({
+                    state: 'complete'
+                })
+                
+                return message.channel.send({ content: `Congrats! The results of ${tournament_name} ${dandy} have been finalized.`})
+            } else {
+                return message.channel.send({ content: `Unable to finalize ${tournament.name} ${dandy} on Challonge.com.`})
+            }
+        } catch (err) {
+            console.log(err)
             return message.channel.send({ content: `Unable to finalize ${tournament.name} ${dandy} on Challonge.com.`})
         }
     }
@@ -339,7 +345,7 @@ client.on('messageCreate', async (message) => {
         for (let i = 0; i < tournaments.length; i++) {
             const tournament = tournaments[i]
             results.push(`Name: ${tournament.name} ${dandy}` +
-                `\nType: ${capitalize(tournament.type)}` +
+                `\nStatus: ${capitalize(tournament.state)}` +
                 `\nBracket: <https://challonge.com/${tournament.url}>`
             )
         }
@@ -347,6 +353,33 @@ client.on('messageCreate', async (message) => {
         return message.channel.send({ content: results.join('\n\n').toString() })
     }
 
+    // CLEAR
+    if (cmd === '!clear') {
+        if (!isMod(message.member)) {
+            return message.channel.send({
+                content: "You do not have permission to do that.",
+            });
+        }
+
+        const element = marr.slice(1, marr.length).join(" ")
+        if (!element) {
+            return message.channel.send({
+                content: `Please specify what you wish to clear.`,
+            });
+        }
+        const cleared = await clearStatus(element)
+        if (cleared) {
+            return message.channel.send({
+                content: `Cleared ${element}.`,
+            });
+        } else {
+            return message.channel.send({
+                content: `Failed to clear ${element}.`,
+            });
+        }
+    }
+     
+    
     //JOIN
     if(joincom.includes(cmd)) {        
         const mention = message.mentions.members.first()
@@ -358,13 +391,21 @@ client.on('messageCreate', async (message) => {
         const tournament = await selectTournament(message, tournaments, maid)
         if (!tournament && count) return message.channel.send({ content: `Sorry, the tournament already started.`})
         if (!tournament && !count) return message.channel.send({ content: `There is no active tournament.`})
-        const entry = await Entry.findOne({ where: { playerId: maid, tournamentId: tournament.id } })
         
-        message.channel.send({ content: `Please check your DMs.`})
+        const info = await Info.findOne({ where: { element: 'firefox' }})
+        if (!info || info.status !== 'free') {
+            return message.channel.send(`Another user is submitting their deck. Please wait a bit and try **!join** again.`)
+        } else {
+            info.status = 'occupied'
+            await info.save()
+            message.channel.send({ content: `Please check your DMs.` });
+        }
+        
+        const entry = await Entry.findOne({ where: { playerId: maid, tournamentId: tournament.id } })
         const dbName = player.duelingBook ? player.duelingBook : await askForDBName(message.member, player)
-        if (!dbName) return
+        if (!dbName)  return clearStatus('firefox')
         const deckListUrl = await getDeckList(message.member, player, tournament.name)
-        if (!deckListUrl) return
+        if (!deckListUrl)  return clearStatus('firefox')
         const deckName = await getDeckName(message.member, player)
         const deckType = await getDeckType(player, tournament.name)
         if (!deckType) return

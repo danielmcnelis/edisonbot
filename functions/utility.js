@@ -7,7 +7,7 @@ const Discord = require('discord.js')
 const { Op } = require('sequelize')
 
 //DATABASE IMPORTS
-const { Card, Membership, Player, Role } = require('../db/index.js')
+const { Card, Info, Membership, Player, Role } = require('../db/index.js')
 
 //STATIC IMPORTS
 const { mad, sad, rock, bronze, silver, gold, platinum, diamond, master, legend, deity } = require('../static/emojis.json')
@@ -23,6 +23,16 @@ const assignRoles = async (guild, member) => {
 
 //CAPITALIZE
 const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
+
+//CLEAR STATUS
+const clearStatus = async (element) => {
+    const info = await Info.findOne({ where: { element } })
+    if (!info) return false
+    info.status = 'free'
+    console.log(`${element} is now free`)
+    await info.save()
+    return true
+}
 
 //CONVERT ARRAY TO OBJECT
 const convertArrayToObject = (arr) => {
@@ -288,6 +298,7 @@ module.exports = {
     assignRoles,
     capitalize,
     convertArrayToObject,
+    clearStatus,
     createMembership,
     createPlayer,
     fetchCardNames,

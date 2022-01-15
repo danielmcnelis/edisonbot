@@ -48,7 +48,7 @@ const uploadDeckFolder = async (tournamentName) => {
   )
 
   oAuth2Client.setCredentials(token)
-  const drive = google.drive({ version: 'v4', auth: oAuth2Client})
+  const drive = google.drive({ version: 'v3', auth: oAuth2Client})
 
   const fileMetadata = {
     'name': `${tournamentName} Decks`,
@@ -59,7 +59,7 @@ const uploadDeckFolder = async (tournamentName) => {
   const extensions = fs.readdirSync(folder)
 
   try {
-    await drive.files.create({
+    drive.files.create({
       resource: fileMetadata,
       fields: 'id'
     }, function (err, file) {
