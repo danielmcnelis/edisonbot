@@ -354,7 +354,7 @@ client.on('messageCreate', async (message) => {
     }
 
     // CLEAR
-    if (cmd === '!clear') {
+    if (cmd === '!quit') {
         if (!isMod(message.member)) {
             return message.channel.send({
                 content: "You do not have permission to do that.",
@@ -364,17 +364,17 @@ client.on('messageCreate', async (message) => {
         const element = marr.slice(1, marr.length).join(" ")
         if (!element) {
             return message.channel.send({
-                content: `Please specify what you wish to clear.`,
+                content: `Please specify the application you wish to quit.`,
             });
         }
         const cleared = await clearStatus(element)
         if (cleared) {
             return message.channel.send({
-                content: `Cleared ${element}.`,
+                content: `Quit ${element}.`,
             });
         } else {
             return message.channel.send({
-                content: `Failed to clear ${element}.`,
+                content: `Failed to quit ${element}.`,
             });
         }
     }
