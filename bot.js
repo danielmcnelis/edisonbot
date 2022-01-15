@@ -707,7 +707,7 @@ client.on('messageCreate', async (message) => {
         	.setThumbnail('https://i.imgur.com/9jhJY11.png')
         	.addField('Mod Ranked Play Commands', '\n!manual - (@winner + @loser) - Manually record a match result. \n!undo - Undo the most recent loss, even if you did not report it.')
             .addField('Mod Tournament Commands', '\n!create - (tournament name) - Create a new tournament. \n!signup - (@user) - Directly add a player to a bracket. \n!deck - (@user) - View the deck list a player submitted for a tournament.\n!noshow - (@user) - Report a no-show. \n!remove - (@user) - Remove a player from a bracket. \n!start - Start a tournament. \n!end (tournament name) - End a tournament. \n!destroy (tournament name) - Destroy a tournament.')
-            .addField('Mod Server Commands', '\n!census - Update the information of all players in the database.');
+            .addField('Mod Server Commands', '\n!census - Update the information of all players in the database. \n!quit - (app) - Force quit an app the bot is using.');
 
         message.author.send({ embeds: [botEmbed] })
         return message.channel.send({ content: "I messaged you the Mod-Only Guide."})
