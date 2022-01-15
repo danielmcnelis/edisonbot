@@ -9,7 +9,7 @@ const { Op } = require('sequelize')
 const FuzzySet = require('fuzzyset')
 
 //DATABASE IMPORTS
-const { Entry, Match, Matchup, Membership, Player, Role, Stats, Status, Tournament }  = require('./db/index.js')
+const { Entry, Info, Match, Matchup, Membership, Player, Role, Stats, Status, Tournament }  = require('./db/index.js')
 
 //FUNCTION IMPORTS
 const { checkDeckList, getDeckType } = require('./functions/deck.js')
@@ -547,9 +547,18 @@ client.on('messageCreate', async (message) => {
     if (legalcom.includes(cmd)) {
         const player = await Player.findOne({ where: { id: maid } })
         if (!player) return message.channel.send({ content: `Sorry.`})
-        message.channel.send({ content: "Please check your DMs."})
+        
+        const info = await Info.findOne({ where: { element: 'firefox' }})
+        if (!info || info.status !== 'free') {
+            return message.channel.send(`Another user is submitting their deck. Please wait a bit and try **!legal** again.`)
+        } else {
+            info.status = 'occupied'
+            await info.save()
+            message.channel.send({ content: `Please check your DMs.` });
+        }
+        
         const issues = await checkDeckList(message.member, player)
-        if (!issues) return
+        if (!issues) return clearStatus('firefox')
 
         if (issues['illegalCards'].length || issues['forbiddenCards'].length || issues['limitedCards'].length || issues['semiLimitedCards'].length) {
             let response = `I'm sorry, ${player.name}, your deck is not legal for Edison Format. ${dandy}`
@@ -668,16 +677,16 @@ client.on('messageCreate', async (message) => {
     //BOT USER GUIDE
     if (botcom.includes(cmd)) {
         const botEmbed = new Discord.MessageEmbed()
-	        .setColor('#38C368')
+	        .setColor('#F05433')
         	.setTitle('EdisonBot')
 	        .setDescription('A Rankings and Tournament Bot for EdisonFormat.com.\n' )
 	        .setURL('https://edisonformat.com/')
 	        .setAuthor('Jazz#2704', 'https://i.imgur.com/wz5TqmR.png', 'https://edisonformat.com/')
             .setThumbnail('https://i.imgur.com/9jhJY11.png')
-        	.addField('Ranked Play Commands', '\n!stats - (blank or @user) - Post a player’s stats. \n!loss - (@user) - Report a loss to another player. \n!top - (n) - Post the channel’s top rated players (100 max). \n!h2h - (@user + @user) - Post the H2H record between 2 players. \n!role - Add or remove the Ranked Players role. \n!undo - Undo the last loss if you made a mistake. \n')
+        	.addField('Ranked Play Commands', '\n!stats - (blank or @user) - Post a player\'s stats. \n!loss - (@user) - Report a loss to another player. \n!top - (n) - Post the server\'s top rated players (100 max). \n!h2h - (@user + @user) - Post the H2H record between 2 players. \n!role - Add or remove the Dueling Book role. \n!undo - Undo the last loss if you made a mistake. \n')
         	.addField('Format Info Commands', '\n!legal - Privately check if your deck is legal. \n!list - View the Forbidden and Limited list. \n')
         	.addField('Tournament Commands', '\n!join - Register for an upcoming tournament.\n!deck - View the deck list you submitted for a tournament. \n!resubmit - Resubmit your deck list for a tournament. \n!drop - Drop from a tournament. \n!bracket - Post the bracket link(s) for the current tournament(s).')
-        	.addField('Server Commands', '\n!db - Set your DuelingBook username. \n!bot - View the RetroBot User Guide. \n!mod - View the Moderator Guide.');
+        	.addField('Server Commands', '\n!db - Set your DuelingBook username. \n!bot - View the EdisonBot User Guide. \n!mod - View the Moderator Guide.');
 
         message.author.send({ embeds: [botEmbed] })
         return message.channel.send({ content: "I messaged you the EdisonBot User Guide."})
@@ -690,7 +699,7 @@ client.on('messageCreate', async (message) => {
         } 
 
         const botEmbed = new Discord.MessageEmbed()
-	        .setColor('#38C368')
+	        .setColor('#F05433')
         	.setTitle('EdisonBot')
 	        .setDescription('A Rankings and Tournament Bot for EdisonFormat.com.\n' )
 	        .setURL('https://edisonformat.com/')
