@@ -2,4 +2,5 @@
 node_modules
 credentials.json
 secrets.json
+token.json
 decks
