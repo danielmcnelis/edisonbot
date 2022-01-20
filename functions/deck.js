@@ -145,7 +145,7 @@ const checkDeckList = async (member, player, tournamentName) => {
     return await channel.awaitMessages({
         filter,
         max: 1,
-        time: 180000
+        time: 30000
     }).then(async collected => {
         const url = collected.first().content
         if (url.includes("www.duelingbook.com/deck")) {		
