@@ -11,7 +11,7 @@ const { Op } = require('sequelize')
 const { Card, Info, Status } = require('../db')
 
 //FUNCTION IMPORTS
-const { clearStatus, convertArrayToObject } = require('./utility.js')
+const { clearStatus, convertArrayToObject, killFirefox } = require('./utility.js')
 
 //STATIC IMPORTS
 const { dandy } = require('../static/emojis.json')
@@ -59,18 +59,24 @@ const saveYDK = async (player, url, tournamentName = 'other') => {
         return deck_arr
     `
 
-    try {
+    try {      
         console.log(`Loading ${player.tag}'s deck at ${url}...`)
-		await driver.get(url)
+        await driver.get(url)
         console.log('driver got Url')
-        await driver.wait(until.elementLocated(By.id('deck_card1')))
+        await driver.wait(until.elementLocated(By.id('deck_card1')), 60000)
         console.log('driver found deck_card1')
         deck_arr = await driver.executeScript(get_deck)
         console.log('driver executed script')
     } catch (err) {
         console.log(err)
+        await driver.quit()
+        console.log('driver quit')
+        await killFirefox()
+        await clearStatus('firefox')
     } finally {
         await driver.quit()
+        console.log('driver quit')
+        await killFirefox()
         await clearStatus('firefox')
     }
       

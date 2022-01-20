@@ -5,6 +5,7 @@
 const fs = require('fs')
 const Discord = require('discord.js')
 const { Op } = require('sequelize')
+const { exec } = require('child_process')
 
 //DATABASE IMPORTS
 const { Card, Info, Membership, Player, Role } = require('../db/index.js')
@@ -216,6 +217,19 @@ const isProgrammer = (member) => member.user.id === '194147938786738176'
 //IS TOURNAMENT PLAYER?
 const isTourPlayer = (member) => member.roles.cache.some(role => role.id === tourRole)
 
+//KILL FIREFOX
+const killFirefox = async () => {
+    exec('killall firefox', (error, stdout, stderr) => {
+        console.log('stdout: ' + stdout)
+        console.log('stderr: ' + stderr)
+        if (error) {
+            console.log('exec error: ' + error)
+        } else {
+            console.log('killed all firefox processes')
+        }
+    })
+}
+
 //SEARCH
 const search = async (query, fuzzyCards) => {
 	const card_name = await findCard(query, fuzzyCards)
@@ -319,6 +333,7 @@ module.exports = {
     isNewUser,
     isProgrammer,
     isTourPlayer,
+    killFirefox,
     search,
     shuffleArray
 }
