@@ -27,8 +27,9 @@ const askForDBName = async (member, player, override = false, error = false, att
     const greeting = override ? '' : 'Hi! '
     const prompt = error ? `I think you're getting ahead of yourself. First, I need ${pronoun} DuelingBook name.`
     : `${greeting}This appears to be ${player.name}'s first tournament in our system. Can you please provide ${pronoun} DuelingBook name?`
-	const { channel } = await member.user.send({ content: `${prompt}` })
-    return await channel.awaitMessages({
+	const message = await member.user.send({ content: `${prompt}` }).catch((err) => console.log(err))
+    if (!message || !message.channel) return false
+    return await message.channel.awaitMessages({
         filter,
 		max: 1,
         time: 15000
@@ -59,8 +60,9 @@ const askForDBName = async (member, player, override = false, error = false, att
 const getDeckList = async (member, player, tournamentName = 'other', override = false) => {            
     const filter = m => m.author.id === member.user.id
     const pronoun = override ? `${player.name}'s` : 'your'
-    const { channel } = await member.user.send({ content: `Please provide a duelingbook.com/deck link for ${pronoun} tournament deck.`})
-    return await channel.awaitMessages({
+    const message = await member.user.send({ content: `Please provide a duelingbook.com/deck link for ${pronoun} tournament deck.`}).catch((err) => console.log(err))
+    if (!message || !message.channel) return false
+    return await message.channel.awaitMessages({
         filter,
         max: 1,
         time: 30000
@@ -108,8 +110,9 @@ const getDeckList = async (member, player, tournamentName = 'other', override = 
 const getDeckName = async (member, player, override = false) => {
     const pronoun = override ? `${player.name}'s` : 'your'
     const filter = m => m.author.id === member.user.id
-	const { channel } = await member.send({ content: `Please provide the common name for ${pronoun} deck (i.e. Quickdraw Plant, Blackwing, Dragon Turbo, etc.).`})
-    return await channel.awaitMessages({
+	const message = await member.send({ content: `Please provide the common name for ${pronoun} deck (i.e. Quickdraw Plant, Blackwing, Dragon Turbo, etc.).`}).catch((err) => console.log(err))
+    if (!message || !message.channel) return false
+    return await message.channel.awaitMessages({
         filter,
 		max: 1,
         time: 15000
@@ -129,8 +132,8 @@ const selectTournament = async (message, tournaments, playerId) => {
     if (tournaments.length === 1) return tournaments[0]
     const options = tournaments.map((tournament, index) => `(${index + 1}) ${tournament.name}`)
     const filter = m => m.author.id === playerId
-    const { channel } = await message.channel.send({ content: `Please select a tournament:\n${options.join('\n')}`})
-    return await channel.awaitMessages({
+    message.channel.send({ content: `Please select a tournament:\n${options.join('\n').toString() }`})
+    return await message.channel.awaitMessages({
         filter,
         max: 1,
         time: 15000
