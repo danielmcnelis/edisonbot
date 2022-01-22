@@ -278,12 +278,12 @@ client.on('messageCreate', async (message) => {
 		if (status === 200) { 
 			tournament.state = 'underway'
 			await tournament.save()
-            // await checkExpiryDate()
-            // const { sheets, oAuth2Client } = await connectToSheets()
-			// const spreadsheetId = await makeSheet(sheets, `${name} Deck Lists`, sheet1Data)
-			// await addSheet(sheets, oAuth2Client, spreadsheetId, 'Summary')
-			// await writeToSheet(sheets, spreadsheetId, 'Summary', 'RAW', sheet2Data)
-			// await uploadDeckFolder(name)
+            await checkExpiryDate()
+            const { sheets, oAuth2Client } = await connectToSheets()
+			const spreadsheetId = await makeSheet(sheets, `${name} Deck Lists`, sheet1Data)
+			await addSheet(sheets, oAuth2Client, spreadsheetId, 'Summary')
+			await writeToSheet(sheets, spreadsheetId, 'Summary', 'RAW', sheet2Data)
+			await uploadDeckFolder(name)
 			return message.channel.send({ content: `Let's go! Your tournament is starting now: https://challonge.com/${url} ${dandy}`})
 		} else {
 			return message.channel.send({ content: `Error: could not access Challonge.com.`})
