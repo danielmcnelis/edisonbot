@@ -118,7 +118,7 @@ const saveYDK = async (player, url, tournamentName = 'other') => {
         }
     }
 
-    const tag = player.tag.replace(/[^\w\s]/gi, "_").replace(/ /g,'')
+    const tag = player.tag.replace(/[^\ws]/gi, "_").replace(/ /g,'')
     fs.writeFile(`./decks/${tournamentName}/${tag}.ydk`, file, (err) => {
         if(err) {
             return console.log(err)
@@ -172,7 +172,7 @@ const checkDeckList = async (member, player, tournamentName) => {
 
 //GET DECK TYPE
 const getDeckType = async (player, tournamentName = 'other') => {
-    const file = `./decks/${tournamentName}/${player.tag.replace(/[^\w\s]/gi, "_").replace(/ /g,'')}.ydk`
+    const file = `./decks/${tournamentName}/${player.tag.replace(/[^\ws]/gi, "_").replace(/ /g,'')}.ydk`
     const raw = fs.readFileSync(file, 'utf8')
     if (!raw) return
     const main = raw.split('#extra')[0]

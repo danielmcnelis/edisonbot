@@ -119,7 +119,7 @@ client.on('messageCreate', async (message) => {
         const tournament_type = await getTournamentType(message)
         if (!tournament_type) return message.channel.send({ content: `Please select a valid tournament type.`})
         const str = generateRandomString(10, '0123456789abcdefghijklmnopqrstuvwxyz')
-        const name = args[0].replace(/[^\w\s]/gi, "_").replace(/ /g,'')
+        const name = args[0].replace(/[^\ws]/gi, "_").replace(/ /g,'')
 
         try {
             const { status, data } = await axios({
