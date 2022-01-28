@@ -399,7 +399,7 @@ client.on('messageCreate', async (message) => {
         if (cleared) {
             return message.channel.send({content: `You force quit ${capitalize(element)}. ${emoji}`})
         } else {
-            return message.channel.send({ content: `Failed to quit ${elecapitalize(element)}. ${emoji}`})
+            return message.channel.send({ content: `Failed to quit ${capitalize(element)}. ${emoji}`})
         }
     }
     
