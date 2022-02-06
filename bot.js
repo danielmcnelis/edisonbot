@@ -36,23 +36,34 @@ client.on('ready', async () => {
 
 //WELCOME
 client.on('guildMemberAdd', async (member) => {
-    const channel = client.channels.cache.get(welcomeChannel)
-    const guild = client.guilds.cache.get('711565397421457432')
-    if (await isNewUser(member.user.id)) await createPlayer(member) 
-    if (await isNewMember(guild.id, member.user.id)) {
-        await createMembership(guild, member)
-        return channel.send({ content: `${member}, Welcome to the EdisonFormat.com ${EF} discord server. ${dandy}`})
-    } else {
-        await assignRoles(guild, member)
-        return channel.send({ content: `${member}, Welcome back to the EdisonFormat.com ${EF} discord server! We missed you. ${legend}`})
+    try {
+        const channel = client.channels.cache.get(welcomeChannel)
+        const guild = client.guilds.cache.get('711565397421457432')
+        if (await isNewUser(member.user.id)) await createPlayer(member) 
+        if (await isNewMember(guild.id, member.user.id)) {
+            await createMembership(guild, member)
+            return channel.send({ content: `${member}, Welcome to the EdisonFormat.com ${EF} discord server. ${dandy}`})
+        } else {
+            await assignRoles(guild, member)
+            return channel.send({ content: `${member}, Welcome back to the EdisonFormat.com ${EF} discord server! We missed you. ${legend}`})
+        }
+    } catch (err) {
+        console.log(err)
     }
 })
 
 //GOODBYE
-client.on('guildMemberRemove', member => client.channels.cache.get(welcomeChannel).send({ content: `Oh dear. ${member.user.username} has left the server. ${sad}`}))
+client.on('guildMemberRemove', member => {
+    try {
+        client.channels.cache.get(welcomeChannel).send({ content: `Oh dear. ${member.user.username} has left the server. ${sad}`})
+    } catch (err) {
+        console.log(err)
+    }
+})
 
 //COMMANDS
 client.on('messageCreate', async (message) => {
+try {
     if (
 		//no commands in DMs
 		!message.guild || 
@@ -1251,4 +1262,6 @@ client.on('messageCreate', async (message) => {
             `\n- ${roleCount} updated ${roleCount === 1 ? 'role' : 'roles'}`
         })
     }
-})
+} catch (err) {
+    console.log(err)
+}})
