@@ -132,7 +132,7 @@ try {
             const { name } = tournament
             await checkExpiryDate()
             await uploadDeckFolder(name)
-            return message.channel.send({ content: `Your tournament files have been uploaded! ${goat}`})
+            return message.channel.send({ content: `Your tournament files have been uploaded! ${dandy}`})
         } else {
             return message.channel.send({ content: `🛠️` })
         }
