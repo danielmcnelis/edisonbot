@@ -166,6 +166,7 @@ try {
                 await Tournament.create({ 
                     id: data.tournament.id,
                     name: data.tournament.name,
+                    format: 'edison',
                     state: data.tournament.state,
                     rounds: data.tournament.swiss_rounds, 
                     type: data.tournament.tournament_type,
@@ -208,6 +209,7 @@ try {
                     await Tournament.create({ 
                         id: data.tournament.id,
                         name: data.tournament.name,
+                        format: 'edison',
                         state: data.tournament.state,
                         rounds: data.tournament.swiss_rounds, 
                         type: data.tournament.tournament_type,
