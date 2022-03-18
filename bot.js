@@ -7,6 +7,7 @@ const Discord = require('discord.js')
 const fs = require('fs')
 const { Op } = require('sequelize')
 const FuzzySet = require('fuzzyset')
+const { exec } = require('child_process')
 
 //DATABASE IMPORTS
 const { Entry, Info, Match, Matchup, Membership, Player, Role, Stats, Status, Tournament }  = require('./db/index.js')
@@ -114,6 +115,23 @@ try {
         }
     }
 
+    //REBOOT
+    if (cmd === `!reboot`) {
+        if (!isMod(message.member)) return message.channel.send({ content: `You do not have permission to do that.`})
+        message.channel.send({ content: `Rebooting RetroBot, GoatBot, EdisonBot, and MerchBot. This should take about 15 seconds.`})
+
+        await killFirefox()
+        return setTimeout(() => {
+            exec('killall node\ncd ~/code\n./run_bots.sh', (err) => {
+                if (err) {
+                    console.log('exec error: ' + err)
+                } else {
+                    console.log('rebooting bots...')
+                }
+            })
+        }, 2000)
+    }
+    
     // FIX
     if (cmd === `!fix`) {
         if (isProgrammer(message.member)) {
