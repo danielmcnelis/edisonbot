@@ -221,9 +221,9 @@ client.on("messageCreate", async (message) => {
       message.channel.send({
         content: `Rebooting RetroBot, GoatBot, EdisonBot, and MerchBot. This should take about 30 seconds.`,
       });
-
-      await killFirefox();
-      return exec('cd ~/code\n./run_bots.sh')
+      
+      exec('cd ~/code\n./run_bots.sh')
+      return 
     }
 
     // FIX
