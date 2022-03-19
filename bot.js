@@ -57,6 +57,7 @@ const {
   getMedal,
   generateRandomString,
   isAdmin,
+  isAmbassador,
   isMod,
   isNewMember,
   isNewUser,
@@ -214,7 +215,7 @@ client.on("messageCreate", async (message) => {
 
     //REBOOT
     if (cmd === `!reboot`) {
-      if (!isMod(message.member))
+      if (!isAmbassador(message.member))
         return message.channel.send({
           content: `You do not have permission to do that.`,
         });

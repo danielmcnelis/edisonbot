@@ -12,7 +12,7 @@ const { Card, Info, Membership, Player, Role } = require('../db/index.js')
 
 //STATIC IMPORTS
 const { mad, sad, rock, bronze, silver, gold, platinum, diamond, master, legend, deity } = require('../static/emojis.json')
-const { adminRole, modRole, tourRole } = require('../static/roles.json')
+const { adminRole, ambassadorRole, modRole, tourRole } = require('../static/roles.json')
 
 //ASSIGN ROLES
 const assignRoles = async (guild, member) => {
@@ -205,6 +205,9 @@ const isAdmin = (member) => member.roles.cache.some(role => role.id === adminRol
 //IS MOD?
 const isMod = (member) => member.roles.cache.some(role => role.id === modRole || role.id === adminRole)
 
+//IS AMBASSADOR?
+const isAmbassador = (member) => member.roles.cache.some(role => role.id === ambassadorRole || role.id === modRole || role.id === adminRole)
+
 //IS NEW MEMBER?
 const isNewUser = async (id) => !await Player.count({ where: { id } })
 
@@ -334,6 +337,7 @@ module.exports = {
     getRandomElement,
     getRandomSubset,
     isAdmin,
+    isAmbassador,
     isMod,
     isNewMember,
     isNewUser,
