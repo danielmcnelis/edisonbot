@@ -594,67 +594,24 @@ client.on("messageCreate", async (message) => {
       return message.channel.send({ content: results.join("\n\n").toString() });
     }
 
-    // CLEAR
-    if (cmd === "!quit") {
-      if (!isMod(message.member)) {
-        return message.channel.send({
-          content: "You do not have permission to do that.",
-        });
-      }
-
-      const element = marr.slice(1, marr.length).join(" ");
-      if (!element) {
-        return message.channel.send({
-          content: `Please specify the application you wish to quit.`,
-        });
-      }
-      const cleared = await clearStatus(element);
-      if (cleared) {
-        return message.channel.send({
-          content: `Quit ${element}.`,
-        });
-      } else {
-        return message.channel.send({
-          content: `Failed to quit ${element}.`,
-        });
-      }
-    }
-
-    // QUIT
-    if (cmd === "!quit") {
-      if (!isMod(message.member))
-        return message.channel.send({
-          content: "You do not have permission to do that.",
-        });
-      const element = marr.slice(1, marr.length).join(" ");
-      if (!element)
-        return message.channel.send({
-          content: `Please specify the application you wish to quit.`,
-        });
-
-      if (element === "firefox") {
+      // QUIT
+      if (cmd === '!quit') {
+        if (!isAmbassador(message.member)) return message.channel.send({ content: "You do not have permission to do that.", })
+      
         try {
-          await killFirefox();
+            await killFirefox()
         } catch (err) {
-          console.log(err);
-          return message.channel.send({
-            content: `Failed to quit ${capitalize(element)}. ${emoji}`,
-          });
+            console.log(err)
+            return message.channel.send({ content: `Failed to quit FireFox. 🦊`})
         }
-      }
 
-      const emoji = element === "firefox" ? "🦊" : "";
-      const cleared = await clearStatus(element);
-      if (cleared) {
-        return message.channel.send({
-          content: `You force quit ${capitalize(element)}. ${emoji}`,
-        });
-      } else {
-        return message.channel.send({
-          content: `Failed to quit ${capitalize(element)}. ${emoji}`,
-        });
-      }
-    }
+        const cleared = await clearStatus('firefox')
+        if (cleared) {
+            return message.channel.send({content: `You force quit FireFox. 🦊`})
+        } else {
+            return message.channel.send({ content: `Failed to quit FireFox. 🦊`})
+        }
+  }
 
     //JOIN
     if (joincom.includes(cmd)) {
