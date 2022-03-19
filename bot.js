@@ -223,7 +223,7 @@ client.on("messageCreate", async (message) => {
         content: `Rebooting RetroBot, GoatBot, EdisonBot, and MerchBot. This should take about 30 seconds.`,
       });
       
-      return exec('cd ~/code\n./run_bots.sh &')
+      return exec('cd ~/code\n./run_bots.sh')
     }
 
     // FIX
