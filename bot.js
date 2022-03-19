@@ -223,6 +223,7 @@ client.on("messageCreate", async (message) => {
       });
       
       await killFirefox()
+      await clearStatus('firefox')
       exec('cd ~/code\n./run_bots.sh')
       return 
     }
