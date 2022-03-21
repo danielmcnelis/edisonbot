@@ -38,7 +38,6 @@ const clearStatus = async (element) => {
     info.status = 'free'
     console.log(`${element} is now free`)
     await info.save()
-    return
 }
 
 //CONVERT ARRAY TO OBJECT
