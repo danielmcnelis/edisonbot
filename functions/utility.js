@@ -34,11 +34,11 @@ const capitalize = (str) => str.charAt(0).toUpperCase() + str.slice(1)
 //CLEAR STATUS
 const clearStatus = async (element) => {
     const info = await Info.findOne({ where: { element } })
-    if (!info) return false
+    if (!info) throw new Error(`Could not find Info where element = ${element}`)
     info.status = 'free'
     console.log(`${element} is now free`)
     await info.save()
-    return true
+    return
 }
 
 //CONVERT ARRAY TO OBJECT
@@ -220,25 +220,6 @@ const isProgrammer = (member) => member.user.id === '194147938786738176'
 //IS TOURNAMENT PLAYER?
 const isTourPlayer = (member) => member.roles.cache.some(role => role.id === tourRole)
 
-//KILL FIREFOX
-const killFirefox = async () => {
-    exec('killall firefox', (err) => {
-        if (err) {
-            console.log('exec error: ' + err)
-        } else {
-            console.log('killed all firefox processes')
-        }
-    })
-
-    exec('killall /usr/lib/firefox/firefox', (err) => {
-        if (err) {
-            console.log('exec error: ' + err)
-        } else {
-            console.log('killed all firefox processes from /usr/lib/')
-        }
-    })
-}
-
 //SEARCH
 const search = async (query, fuzzyCards) => {
 	const card_name = await findCard(query, fuzzyCards)
@@ -343,7 +324,6 @@ module.exports = {
     isNewUser,
     isProgrammer,
     isTourPlayer,
-    killFirefox,
     search,
     shuffleArray
 }

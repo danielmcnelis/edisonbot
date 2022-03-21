@@ -6,7 +6,7 @@ const Discord = require("discord.js");
 const fs = require("fs");
 const { Op } = require("sequelize");
 const FuzzySet = require("fuzzyset");
-const { exec } = require("child_process");
+const { exec, execFile } = require("child_process");
 
 //DATABASE IMPORTS
 const {
@@ -63,7 +63,6 @@ const {
   isNewUser,
   isProgrammer,
   isTourPlayer,
-  killFirefox,
   search,
 } = require("./functions/utility.js");
 
@@ -219,11 +218,13 @@ client.on("messageCreate", async (message) => {
         return message.channel.send({
           content: `You do not have permission to do that.`,
         });
-      message.channel.send({
-        content: `Rebooting RetroBot, GoatBot, EdisonBot, and MerchBot. This should take about 30 seconds.`,
-      });
-      
-      return exec('cd ~/code\n./run_bots.sh')
+      try {
+        await message.channel.send({ content: `Rebooting RetroBot, GoatBot, EdisonBot, and MerchBot. This should take about 30 seconds.`})
+        await clearStatus('firefox')
+        return execFile('~/code/run_bots.sh')
+      } catch (err) {
+          console.log(err)
+      }
     }
 
     // FIX
@@ -599,13 +600,10 @@ client.on("messageCreate", async (message) => {
         if (!isAmbassador(message.member)) return message.channel.send({ content: "You do not have permission to do that.", })
       
         try {
-            await killFirefox()
-            const cleared = await clearStatus('firefox')
-            if (cleared) {
-                return message.channel.send({content: `You force quit FireFox. 🦊`})
-            } else {
-                return message.channel.send({ content: `Failed to quit FireFox. 🦊`})
-            }
+            exec('killall firefox')
+            exec('killall /usr/lib/firefox/firefox')
+            await clearStatus('firefox')
+            return message.channel.send({content: `You force quit FireFox. 🦊`})
         } catch (err) {
             console.log(err)
             return message.channel.send({ content: `Failed to quit FireFox. 🦊`})
@@ -658,13 +656,25 @@ client.on("messageCreate", async (message) => {
       const dbName = player.duelingBook
         ? player.duelingBook
         : await askForDBName(message.member, player);
-      if (!dbName) return clearStatus("firefox");
+      if (!dbName) {
+        try {
+          return clearStatus("firefox");
+        } catch (err) {
+          console.log(err)
+        }
+      }
       const deckListUrl = await getDeckList(
         message.member,
         player,
         tournament.name
       );
-      if (!deckListUrl) return clearStatus("firefox");
+      if (!deckListUrl) {
+        try {
+          return clearStatus("firefox");
+        } catch (err) {
+          console.log(err)
+        }
+      }
       const deckName = await getDeckName(message.member, player);
       const deckType = await getDeckType(player, tournament.name);
       if (!deckType) return;
@@ -938,7 +948,13 @@ client.on("messageCreate", async (message) => {
       }
 
       const issues = await checkDeckList(message.member, player);
-      if (!issues) return clearStatus("firefox");
+      if (!issues) {
+        try {
+          return clearStatus("firefox");
+        } catch (err) {
+          console.log(err)
+        }
+      }
 
       if (
         issues["illegalCards"].length ||
