@@ -6,6 +6,7 @@ const fs = require('fs')
 const { Builder, By, until } = require('selenium-webdriver')
 const firefox = require('selenium-webdriver/firefox')
 const { Op } = require('sequelize')
+const { exec } = require('child_process')
 
 //DATABASE IMPORTS
 const { Card, Info, Status } = require('../db')
