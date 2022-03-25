@@ -212,20 +212,20 @@ client.on("messageCreate", async (message) => {
       }
     }
 
-    //REBOOT
-    if (cmd === `!reboot`) {
-      if (!isAmbassador(message.member))
-        return message.channel.send({
-          content: `You do not have permission to do that.`,
-        });
-      try {
-        await message.channel.send({ content: `Rebooting RetroBot, GoatBot, EdisonBot, and MerchBot. This should take about 30 seconds.`})
-        await clearStatus('firefox')
-        return execFile('~/code/run_bots.sh')
-      } catch (err) {
-          console.log(err)
-      }
-    }
+    // //REBOOT
+    // if (cmd === `!reboot`) {
+    //   if (!isAmbassador(message.member))
+    //     return message.channel.send({
+    //       content: `You do not have permission to do that.`,
+    //     });
+    //   try {
+    //     await message.channel.send({ content: `Rebooting RetroBot, GoatBot, EdisonBot, and MerchBot. This should take about 30 seconds.`})
+    //     await clearStatus('firefox')
+    //     return execFile('~/code/run_bots.sh')
+    //   } catch (err) {
+    //       console.log(err)
+    //   }
+    // }
 
     // FIX
     if (cmd === `!fix`) {
