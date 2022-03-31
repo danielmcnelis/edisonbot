@@ -212,6 +212,37 @@ client.on("messageCreate", async (message) => {
       }
     }
 
+    //pfps
+    if (cmd === '!pfps') {
+      if (!isProgrammer(message.member)) return
+      let count = 0
+      try {
+          const membersMap = await message.guild.members.fetch()
+          const memberIds = [...membersMap.keys()]
+          console.log('memberIds.length', memberIds.length)
+          for (let i = 0; i < memberIds.length; i++) {
+              const memberId = memberIds[i]
+              const avatar = membersMap.get(memberId).user.avatar
+              if (!avatar) continue
+
+              const player = await Player.findOne({
+                  where: {
+                      id: memberId,
+                      avatar: null
+                  }
+              })
+
+              if (!player) continue
+              player.avatar = avatar
+              await player.save()
+              count++
+          }
+      } catch (err) {
+          console.log(err)
+      }
+
+      return console.log(`added ${count} avatars`)
+  }
     // //REBOOT
     // if (cmd === `!reboot`) {
     //   if (!isAmbassador(message.member))
