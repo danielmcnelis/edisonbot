@@ -274,11 +274,11 @@ const search = async (query, fuzzyCards) => {
 			` ${!card.link ? `**DEF:** ${card.def === null ? '?' : card.def}` : ''}` :
 			''
 	
-	const attachment = fs.existsSync(`../merchbot2/public/card_images/${card.image_file}`) ?
-		new Discord.MessageAttachment(`../merchbot2/public/card_images/${card.image_file}`, card.image_file) :
+	const attachment = fs.existsSync(`../merchbot2/public/card_images/${card.ypdId}.png`) ?
+		new Discord.MessageAttachment(`../merchbot2/public/card_images/${card.ypdId}.png`, `${card.ypdId}.png`) :
 		false
 
-	const thumbnail = attachment ? `attachment://${card.image_file}` : `https://ygoprodeck.com/pics/${card.image_file}`
+	const thumbnail = attachment ? `attachment://${card.ypdId}.png` : `https://ygoprodeck.com/pics/${card.ypdId}.png`
 	const cardEmbed = new Discord.MessageEmbed()
 	cardEmbed.setColor(color)
 	cardEmbed.setTitle(card.name)

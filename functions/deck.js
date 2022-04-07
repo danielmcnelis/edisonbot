@@ -95,10 +95,10 @@ const saveYDK = async (player, url, tournamentName = 'other') => {
     const file = deck_arr.join('\n')
     const cards_arr = deck_arr.filter(el => el.charAt(0) !== '#' && el.charAt(0) !== '!' && el !== '').sort()
     const cards_obj = convertArrayToObject(cards_arr)        
-    const card_ids = [...await Card.findAll({ where: { tcg_date: { [Op.lte]: '2010-04-24' } }})].map(c => c.konami_code)
-    const forbidden_card_ids = [...await Status.findAll({ where: { mar10: 'forbidden' }, include: Card })].map(s => s.card.konami_code)
-    const limited_card_ids = [...await Status.findAll({ where: { mar10: 'limited' }, include: Card })].map(s => s.card.konami_code)
-    const semi_limited_card_ids = [...await Status.findAll({ where: { mar10: 'semi-limited' }, include: Card })].map(s => s.card.konami_code)
+    const card_ids = [...await Card.findAll({ where: { tcg_date: { [Op.lte]: '2010-04-24' } }})].map(c => c.konamiCode)
+    const forbidden_card_ids = [...await Status.findAll({ where: { mar10: 'forbidden' }, include: Card })].map(s => s.card.konamiCode)
+    const limited_card_ids = [...await Status.findAll({ where: { mar10: 'limited' }, include: Card })].map(s => s.card.konamiCode)
+    const semi_limited_card_ids = [...await Status.findAll({ where: { mar10: 'semi-limited' }, include: Card })].map(s => s.card.konamiCode)
 
     const illegalCards = []
     const forbiddenCards = []
@@ -108,23 +108,23 @@ const saveYDK = async (player, url, tournamentName = 'other') => {
 
     const keys = Object.keys(cards_obj)
     for (let i = 0; i < keys.length; i++) {
-        let konami_code = keys[i]
-        while (konami_code.length < 8) konami_code = '0' + konami_code 
-        if (!card_ids.includes(konami_code)) {
-            const card = await Card.findOne({ where: { konami_code: konami_code } })
+        let konamiCode = keys[i]
+        while (konamiCode.length < 8) konamiCode = '0' + konamiCode 
+        if (!card_ids.includes(konamiCode)) {
+            const card = await Card.findOne({ where: { konamiCode: konamiCode } })
             if (card) {
                 illegalCards.push(card.name)
             } else {
-                unrecognizedCards.push(konami_code)
+                unrecognizedCards.push(konamiCode)
             }
-        } else if (forbidden_card_ids.includes(konami_code)) {
-            const card = await Card.findOne({ where: { konami_code: konami_code } })
+        } else if (forbidden_card_ids.includes(konamiCode)) {
+            const card = await Card.findOne({ where: { konamiCode: konamiCode } })
             if (card) forbiddenCards.push(card.name)
-        } else if (limited_card_ids.includes(konami_code) && cards_obj[konami_code] > 1) {
-            const card = await Card.findOne({ where: { konami_code: konami_code } })
+        } else if (limited_card_ids.includes(konamiCode) && cards_obj[konamiCode] > 1) {
+            const card = await Card.findOne({ where: { konamiCode: konamiCode } })
             if (card) limitedCards.push(card.name)
-        } else if (semi_limited_card_ids.includes(konami_code) && cards_obj[konami_code] > 2) {
-            const card = await Card.findOne({ where: { konami_code: konami_code } })
+        } else if (semi_limited_card_ids.includes(konamiCode) && cards_obj[konamiCode] > 2) {
+            const card = await Card.findOne({ where: { konamiCode: konamiCode } })
             if (card) semiLimitedCards.push(card.name)
         }
     }
