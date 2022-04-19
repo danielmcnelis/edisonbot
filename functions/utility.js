@@ -264,18 +264,18 @@ const search = async (query, fuzzyCards) => {
 	const labels = card.category === "Monster" ? 
 		`**Attribute:** ${card.attribute}` + 
 		`\n${card.xyz ? `**Rank:** ${card.level}` : card.link ? `**Link Rating:** ${card.rating}` : `**Level:** ${card.level}`}` +
-		`\n**Release Date:** ${card.tcg_date || 'OCG Only'}` +
+		`\n**Release Date:** ${card.tcgDate || 'OCG Only'}` +
 		`\n**[** ${card.type} / ${classes.join(" / ")} **]**` :
 		`**Category: ${card.icon}**` +
-		`\n**Release Date:** ${card.tcg_date || 'OCG Only'}`
+		`\n**Release Date:** ${card.tcgDate || 'OCG Only'}`
 	
 	const stats = card.category === "Monster" ? 
 			`**ATK:** ${card.atk === null ? '?' : card.atk}` + 
 			` ${!card.link ? `**DEF:** ${card.def === null ? '?' : card.def}` : ''}` :
 			''
 	
-	const attachment = fs.existsSync(`../merchbot2/public/card_images/${card.ypdId}.jpg`) ?
-		new Discord.MessageAttachment(`../merchbot2/public/card_images/${card.ypdId}.jpg`, `${card.ypdId}.jpg`) :
+	const attachment = fs.existsSync(`../formatlibrary/public/images/cards/${card.ypdId}.jpg`) ?
+		new Discord.MessageAttachment(`../formatlibrary/public/images/cards/${card.ypdId}.jpg`, `${card.ypdId}.jpg`) :
 		false
 
 	const thumbnail = attachment ? `attachment://${card.ypdId}.jpg` : `https://ygoprodeck.com/pics/${card.ypdId}.jpg`
